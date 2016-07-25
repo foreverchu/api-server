@@ -1,0 +1,480 @@
+*** Settings ***
+Library           Collections
+Library           String
+Library           HttpLibrary.HTTP
+Library           RequestsLibrary
+Library           string
+Library           Database Library
+
+*** Keywords ***
+tiaojian
+    [Arguments]    ${numbers}    ${num2}
+    ${set}    set variable    3
+    run keyword if    ${numbers}==0    should be equal    ${num2}    ${set}
+    run keyword if    ${numbers}==1    should be equal    ${num2}    ${set}
+    run keyword if    ${numbers}==2    should not be equal    ${num2}    ${set}
+    run keyword if    ${numbers}==0    log    这两个值相等
+    ${a}    set variable    1
+    ${limitation}    run keyword if    ${numbers}==0    set variable    3
+    ${c}    run keyword if    ${numbers}==0    set variable    4
+    [Return]    ${a}    ${limitation}    ${c}
+
+post_party
+    [Arguments]    ${party_json}    ${exepct_msg}    ${exepct_result}
+    Create Session    httpbin    http://localhost:8080/api/party
+    ${headers}=    Create Dictionary    Content-Type    application/json
+    ${resp}=    post request    httpbin    /    data=${party_json}    headers=${headers}
+    Should Be Equal As Strings    ${resp.status_code}    200
+    log    ${resp.content}
+    ${jsondata}    to json    ${resp.content}    true
+    ${result}    get json value    ${jsondata}    /result
+    ${msg}    get json value    ${jsondata}    /msg
+    should be equal    ${msg}    ${exepct_msg}
+    should be equal    ${result}    ${exepct_result}
+
+post_Createparty
+    [Arguments]    ${party_json}    ${exepct_msg}    ${exepct_result}
+    Create Session    httpbin    http://localhost:8080/api/party
+    ${headers}=    Create Dictionary    Content-Type    application/json
+    ${resp}=    post request    httpbin    /    data=${party_json}    headers=${headers}
+    Should Be Equal As Strings    ${resp.status_code}    200
+    log    ${resp.content}
+    ${jsondata}    to json    ${resp.content}    true
+    ${result}    get json value    ${jsondata}    /result
+    ${msg}    get json value    ${jsondata}    /msg
+    ${party_id}    run keyword if    ${result}==0    get json value    ${jsondata}    /party_id
+    should be equal    ${msg}    ${exepct_msg}
+    should be equal    ${result}    ${exepct_result}
+    [Return]    ${party_id}
+
+post_Queryparty
+    [Arguments]    ${party_json}    ${exepct_msg}    ${exepct_result}
+    Create Session    httpbin    http://localhost:8080/api/party
+    ${headers}=    Create Dictionary    Content-Type    application/json
+    ${resp}=    post request    httpbin    /    data=${party_json}    headers=${headers}
+    Should Be Equal As Strings    ${resp.status_code}    200
+    log    ${resp.content}
+    ${jsondata}    to json    ${resp.content}    true
+    ${result}    get json value    ${jsondata}    /result
+    ${msg}    get json value    ${jsondata}    /msg
+    ${party_id}    run keyword if    ${result}==0    get json value    ${jsondata}    /party/Id
+    should be equal    ${msg}    ${exepct_msg}
+    should be equal    ${result}    ${exepct_result}
+    [Return]    ${party_id}
+
+post_QuerypartyGame
+    [Arguments]    ${party_json}    ${exepct_msg}    ${exepct_result}
+    Create Session    httpbin    http://localhost:8080/api/party
+    ${headers}=    Create Dictionary    Content-Type    application/json
+    ${resp}=    post request    httpbin    /    data=${party_json}    headers=${headers}
+    Should Be Equal As Strings    ${resp.status_code}    200
+    log    ${resp.content}
+    ${jsondata}    to json    ${resp.content}    true
+    ${result}    get json value    ${jsondata}    /result
+    ${msg}    get json value    ${jsondata}    /msg
+    ${games}    run keyword if    ${result}==0    get json value    ${jsondata}    /games
+    should be equal    ${msg}    ${exepct_msg}
+    should be equal    ${result}    ${exepct_result}
+    [Return]    ${games}
+
+post_Listparty
+    [Arguments]    ${party_json}    ${exepct_msg}    ${exepct_result}
+    Create Session    httpbin    http://localhost:8080/api/party
+    ${headers}=    Create Dictionary    Content-Type    application/json
+    ${resp}=    post request    httpbin    /    data=${party_json}    headers=${headers}
+    Should Be Equal As Strings    ${resp.status_code}    200
+    log    ${resp.content}
+    ${jsondata}    to json    ${resp.content}    true
+    ${result}    get json value    ${jsondata}    /result
+    ${msg}    get json value    ${jsondata}    /msg
+    ${count}    run keyword if    ${result}==0    get json value    ${jsondata}    /count
+    ${partylist}    run keyword if    ${result}==0    get json value    ${jsondata}    /partylist
+    should be equal    ${msg}    ${exepct_msg}
+    should be equal    ${result}    ${exepct_result}
+
+post_game
+    [Arguments]    ${game_json}    ${exepct_msg}    ${exepct_result}
+    Create Session    httpbin    http://localhost:8080/api/game
+    ${headers}=    Create Dictionary    Content-Type    application/json
+    ${resp}=    post request    httpbin    /    data=${game_json}    headers=${headers}
+    Should Be Equal As Strings    ${resp.status_code}    200
+    log    ${resp.content}
+    ${jsondata}    to json    ${resp.content}    true
+    ${result}    get json value    ${jsondata}    /result
+    ${msg}    get json value    ${jsondata}    /msg
+    should be equal    ${msg}    ${exepct_msg}
+    should be equal    ${result}    ${exepct_result}
+
+post_Creategame
+    [Arguments]    ${game_json}    ${exepct_msg}    ${exepct_result}
+    Create Session    httpbin    http://localhost:8080/api/game
+    ${headers}=    Create Dictionary    Content-Type    application/json
+    ${resp}=    post request    httpbin    /    data=${game_json}    headers=${headers}
+    Should Be Equal As Strings    ${resp.status_code}    200
+    log    ${resp.content}
+    ${jsondata}    to json    ${resp.content}    true
+    ${result}    get json value    ${jsondata}    /result
+    ${msg}    get json value    ${jsondata}    /msg
+    ${game_id}    run keyword if    ${result}==0    get json value    ${jsondata}    /game_id
+    should be equal    ${msg}    ${exepct_msg}
+    should be equal    ${result}    ${exepct_result}
+    [Return]    ${game_id}
+
+post_Querygame
+    [Arguments]    ${game_json}    ${exepct_msg}    ${exepct_result}
+    Create Session    httpbin    http://localhost:8080/api/game
+    ${headers}=    Create Dictionary    Content-Type    application/json
+    ${resp}=    post request    httpbin    /    data=${game_json}    headers=${headers}
+    Should Be Equal As Strings    ${resp.status_code}    200
+    log    ${resp.content}
+    ${jsondata}    to json    ${resp.content}    true
+    ${result}    get json value    ${jsondata}    /result
+    ${msg}    get json value    ${jsondata}    /msg
+    ${count}    run keyword if    ${result}==0    get json value    ${jsondata}    /count
+    should be equal    ${msg}    ${exepct_msg}
+    should be equal    ${result}    ${exepct_result}
+
+post_message
+    [Arguments]    ${message_json}    ${exepct_msg}    ${exepct_result}
+    Create Session    httpbin    http://localhost:8080/api/send_message
+    ${headers}=    Create Dictionary    Content-Type    application/json
+    ${resp}=    post request    httpbin    /    data=${message_json}    headers=${headers}
+    Should Be Equal As Strings    ${resp.status_code}    200
+    log    ${resp.content}
+    ${jsondata}    to json    ${resp.content}    true
+    ${result}    get json value    ${jsondata}    /result
+    ${msg}    get json value    ${jsondata}    /msg
+    should be equal    ${msg}    ${exepct_msg}
+    should be equal    ${result}    ${exepct_result}
+
+post_user
+    [Arguments]    ${user_json}    ${exepct_msg}    ${exepct_result}
+    Create Session    httpbin    http://localhost:8080/api/user
+    ${headers}=    Create Dictionary    Content-Type    application/json
+    ${resp}=    post request    httpbin    /    data=${user_json}    headers=${headers}
+    Should Be Equal As Strings    ${resp.status_code}    200
+    log    ${resp.content}
+    ${jsondata}    to json    ${resp.content}    true
+    ${result}    get json value    ${jsondata}    /result
+    ${msg}    get json value    ${jsondata}    /msg
+    should be equal    ${msg}    ${exepct_msg}
+    should be equal    ${result}    ${exepct_result}
+
+post_userSignin
+    [Arguments]    ${user_json}    ${exepct_msg}    ${exepct_result}
+    Create Session    httpbin    http://localhost:8080/api/user
+    ${headers}=    Create Dictionary    Content-Type    application/json
+    ${resp}=    post request    httpbin    /    data=${user_json}    headers=${headers}
+    Should Be Equal As Strings    ${resp.status_code}    200
+    log    ${resp.content}
+    ${jsondata}    to json    ${resp.content}    true
+    ${result}    get json value    ${jsondata}    /result
+    ${token}    run keyword if    ${result}==0    get json value    ${jsondata}    /token
+    ${msg}    get json value    ${jsondata}    /msg
+    should be equal    ${msg}    ${exepct_msg}
+    should be equal    ${result}    ${exepct_result}
+    [Return]    ${token}
+
+post_UserReg
+    [Arguments]    ${user_json}    ${exepct_msg}    ${exepct_result}
+    [Documentation]    注册
+    Create Session    httpbin    http://localhost:8080/api/user
+    ${headers}=    Create Dictionary    Content-Type    application/json
+    ${resp}=    post request    httpbin    /    data=${user_json}    headers=${headers}
+    Should Be Equal As Strings    ${resp.status_code}    200
+    log    ${resp.content}
+    ${jsondata}    to json    ${resp.content}    true
+    ${result}    get json value    ${jsondata}    /result
+    ${token}    run keyword if    ${result}==0    get json value    ${jsondata}    /token
+    ${msg}    get json value    ${jsondata}    /msg
+    should be equal    ${msg}    ${exepct_msg}
+    should be equal    ${result}    ${exepct_result}
+
+post_UserInfoQuery
+    [Arguments]    ${user_json}    ${exepct_msg}    ${exepct_result}
+    [Documentation]    用户信息查询
+    Create Session    httpbin    http://localhost:8080/api/user
+    ${headers}=    Create Dictionary    Content-Type    application/json
+    ${resp}=    post request    httpbin    /    data=${user_json}    headers=${headers}
+    Should Be Equal As Strings    ${resp.status_code}    200
+    log    ${resp.content}
+    ${jsondata}    to json    ${resp.content}    true
+    ${result}    get json value    ${jsondata}    /result
+    ${name}    run keyword if    ${result}==0    get json value    ${jsondata}    /user/Name
+    ${msg}    get json value    ${jsondata}    /msg
+    should be equal    ${msg}    ${exepct_msg}
+    should be equal    ${result}    ${exepct_result}
+    [Return]    ${name}
+
+post_test_regetqueuetoken
+    [Arguments]    ${register_json}    ${exepct_msg}    ${exepct_result}
+    [Documentation]    填写选手信息获取token排队
+    Create Session    httpbin    http://localhost:8080/api/reg
+    ${headers}=    Create Dictionary    Content-Type    application/json
+    ${resp}=    post request    httpbin    /    data=${register_json}    headers=${headers}
+    Should Be Equal As Strings    ${resp.status_code}    200
+    ${jsondata}    to json    ${resp.content}    true
+    ${result}    get json value    ${jsondata}    /result
+    ${queue_state}    run keyword if    ${result}==0    get json value    ${jsondata}    /queue_state
+    ${token}    run keyword if    ${result}==0    get json value    ${jsondata}    /token
+    log    ${token}
+    run keyword if    ${token}==None    log    无token返回
+    ${query_interval}    run keyword if    ${result}==0    get json value    ${jsondata}    /query_interval
+    log    ${query_interval}
+    ${count}    run keyword if    ${result}==0    get json value    ${jsondata}    /count
+    log    ${count}
+    ${msg}    get json value    ${jsondata}    /msg
+    should be equal    ${msg}    ${msg}
+    should be equal    ${result}    ${exepct_result}
+    [Return]    ${token}
+
+post_RegQueryQueueTokenState
+    [Arguments]    ${queryqueue_json}    ${msg}    ${exepct_result}
+    [Documentation]    查询排队token状态
+    Create Session    httpbin    http://localhost:8080/api/reg
+    ${headers}=    Create Dictionary    Content-Type    application/json
+    ${resp}=    post request    httpbin    /    data=${queryqueue_json}    headers=${headers}
+    Should Be Equal As Strings    ${resp.status_code}    200
+    ${jsondata}    to json    ${resp.content}    true
+    ${result}    get json value    ${jsondata}    /result
+    ${queue_state}    get json value    ${jsondata}    /queue_state
+    log    ${queue_state}
+    ${order_no}    get json value    ${jsondata}    /order_no
+    log    ${order_no}
+    ${count}    get json value    ${jsondata}    /count
+    log    ${count}
+    ${query_interval}    get json value    ${jsondata}    /query_interval
+    ${excpet_msg}    get json value    ${jsondata}    /msg
+    ${excpet_orderno}    set variable    ""
+    ${excpet_count}    set variable    0
+    run keyword if    ${queue_state}==0    should not be equal    ${count}    ${excpet_count}
+    run keyword if    ${queue_state}==1    should not be equal    ${order_no}    ${excpet_orderno}
+    run keyword if    ${queue_state}==2    log    报名名额已满
+    should be equal    ${queue_state}    ${msg}
+    should be equal    ${result}    ${exepct_result}
+    [Return]    ${order_no}
+
+post_RegQueryUserOrders
+    [Arguments]    ${user_json}    ${exepct_msg}    ${exepct_result}
+    [Documentation]    查询用户报名订单
+    Create Session    httpbin    http://localhost:8080/api/reg
+    ${headers}=    Create Dictionary    Content-Type    application/json
+    ${resp}=    post request    httpbin    /    data=${user_json}    headers=${headers}
+    Should Be Equal As Strings    ${resp.status_code}    200
+    log    ${resp.content}
+    ${jsondata}    to json    ${resp.content}    true
+    ${result}    get json value    ${jsondata}    /result
+    ${msg}    get json value    ${jsondata}    /msg
+    should be equal    ${msg}    ${exepct_msg}
+    should be equal    ${result}    ${exepct_result}
+
+post_RegQueryOrder
+    [Arguments]    ${orderno_json}    ${exepct_msg}    ${exepct_result}
+    [Documentation]    查询订单下所有报名
+    Create Session    httpbin    http://localhost:8080/api/reg
+    ${headers}=    Create Dictionary    Content-Type    application/json
+    ${resp}=    post request    httpbin    /    data=${orderno_json}    headers=${headers}
+    Should Be Equal As Strings    ${resp.status_code}    200
+    log    ${resp.content}
+    ${jsondata}    to json    ${resp.content}    true
+    ${result}    get json value    ${jsondata}    /result
+    ${msg}    get json value    ${jsondata}    /msg
+    ${refistrations}    run keyword if    ${result}==0    get json value    ${jsondata}    /registrations
+    ${refistrations_len}    run keyword if    ${refistrations}!=None    get length    ${refistrations}
+    run keyword if    ${refistrations_len}<=20    should be equal    "该订单下的比赛个数查询不正确"    ""
+    run keyword if    ${refistrations}!=None    log    "已返回对应的比赛人信息"
+    should be equal    ${msg}    ${exepct_msg}
+    should be equal    ${result}    ${exepct_result}
+
+post_regSetGameLimitaion
+    [Arguments]    ${limitation_json}    ${exepct_msg}    ${exepct_result}
+    [Documentation]    设置赛事名额限制
+    Create Session    httpbin    http://localhost:8080/api/reg
+    ${headers}=    Create Dictionary    Content-Type    application/json
+    ${resp}=    post request    httpbin    /    data=${limitation_json}    headers=${headers}
+    Should Be Equal As Strings    ${resp.status_code}    200
+    log    ${resp.content}
+    ${jsondata}    to json    ${resp.content}    true
+    ${result}    get json value    ${jsondata}    /result
+    ${msg}    get json value    ${jsondata}    /msg
+    should be equal    ${msg}    ${exepct_msg}
+    should be equal    ${result}    ${exepct_result}
+
+post_RegGetGameLimitationInfo
+    [Arguments]    ${limitation_json}    ${exepct_msg}    ${exepct_result}
+    [Documentation]    获取赛事名额限制及已报名人数
+    Create Session    httpbin    http://localhost:8080/api/reg
+    ${headers}=    Create Dictionary    Content-Type    application/json
+    ${resp}=    post request    httpbin    /    data=${limitation_json}    headers=${headers}
+    Should Be Equal As Strings    ${resp.status_code}    200
+    log    ${resp.content}
+    ${jsondata}    to json    ${resp.content}    true
+    ${result}    get json value    ${jsondata}    /result
+    ${msg}    get json value    ${jsondata}    /msg
+    ${limitation}    run keyword if    ${result}==0    get json value    ${jsondata}    /limitation
+    ${balance}    run keyword if    ${result}==0    get json value    ${jsondata}    /balance
+    log    ${limitation}
+    should be equal    ${msg}    ${exepct_msg}
+    should be equal    ${result}    ${exepct_result}
+    [Return]    ${limitation}
+
+post_regSetAllGameLimitaion
+    [Arguments]    ${balance_json}    ${exepct_msg}    ${exepct_result}
+    [Documentation]    设置赛事名额限制
+    Create Session    httpbin    http://localhost:8080/api/reg
+    ${headers}=    Create Dictionary    Content-Type    application/json
+    ${resp}=    post request    httpbin    /    data=${balance_json}    headers=${headers}
+    Should Be Equal As Strings    ${resp.status_code}    200
+    log    ${resp.content}
+    ${jsondata}    to json    ${resp.content}    true
+    ${result}    get json value    ${jsondata}    /result
+    ${msg}    get json value    ${jsondata}    /msg
+    should be equal    ${msg}    ${exepct_msg}
+    should be equal    ${result}    ${exepct_result}
+
+post_RegGetAllGamesBalanceInfo
+    [Arguments]    ${balance_json}    ${exepct_msg}    ${exepct_result}
+    [Documentation]    获取所有正在报名比赛余下的名额
+    Create Session    httpbin    http://localhost:8080/api/reg
+    ${headers}=    Create Dictionary    Content-Type    application/json
+    ${resp}=    post request    httpbin    /    data=${balance_json}    headers=${headers}
+    Should Be Equal As Strings    ${resp.status_code}    200
+    log    ${resp.content}
+    ${jsondata}    to json    ${resp.content}    true
+    ${result}    get json value    ${jsondata}    /result
+    ${balances}    run keyword if    ${result}==0    get json value    ${jsondata}    /balance
+    ${msg}    get json value    ${jsondata}    /msg
+    should be equal    ${msg}    ${exepct_msg}
+    should be equal    ${result}    ${exepct_result}
+    [Return]    ${balances}
+
+post_QueryRegstateByCert
+    [Arguments]    ${query_json}    ${exepct_msg}    ${exepct_result}
+    [Documentation]    根据证件号码查询赛事报名情况
+    Create Session    httpbin    http://localhost:8080/api/reg
+    ${headers}=    Create Dictionary    Content-Type    application/json
+    ${resp}=    post request    httpbin    /    data=${query_json}    headers=${headers}
+    Should Be Equal As Strings    ${resp.status_code}    200
+    log    ${resp.content}
+    ${jsondata}    to json    ${resp.content}    true
+    ${result}    get json value    ${jsondata}    /result
+    ${order_info}    run keyword if    ${result}==0    get json value    ${jsondata}    /order_info
+    ${order_no}    run keyword if    ${result}==0    get json value    ${jsondata}    /order_no
+    ${game_name}    run keyword if    ${result}==0    get json value    ${jsondata}    /game_name
+    ${pay_status}    run keyword if    ${result}==0    get json value    ${jsondata}    /pay_status
+    ${currency_type}    run keyword if    ${result}==0    get json value    ${jsondata}    /currency_type
+    ${msg}    get json value    ${jsondata}    /msg
+    should be equal    ${msg}    ${exepct_msg}
+    should be equal    ${result}    ${exepct_result}
+    [Return]    ${balances}
+
+post_getWechatPayUrl
+    [Arguments]    ${wechat_json}    ${exepct_msg}    ${exepct_result}
+    [Documentation]    获取微信支付url
+    Create Session    httpbin    http://localhost:8080/api/wechat_pay
+    ${headers}=    Create Dictionary    Content-Type    application/json
+    ${resp}=    post request    httpbin    /    data=${wechat_json}    headers=${headers}
+    Should Be Equal As Strings    ${resp.status_code}    200
+    log    ${resp.content}
+    ${jsondata}    to json    ${resp.content}    true
+    ${result}    get json value    ${jsondata}    /result
+    ${return_url}    run keyword if    ${result}==0    get json value    ${jsondata}    /retrun_url
+    ${msg}    get json value    ${jsondata}    /msg
+    should be equal    ${msg}    ${exepct_msg}
+    should be equal    ${result}    ${exepct_result}
+    [Return]    ${return_url}
+
+post_PartyQueryRegOrders
+    [Arguments]    ${query_json}    ${exepct_msg}    ${exepct_result}
+    [Documentation]    查询赛事报名订单
+    Create Session    httpbin    http://localhost:8080/api/party
+    ${headers}=    Create Dictionary    Content-Type    application/json
+    ${resp}=    post request    httpbin    /    data=${query_json}    headers=${headers}
+    Should Be Equal As Strings    ${resp.status_code}    200
+    log    ${resp.content}
+    ${jsondata}    to json    ${resp.content}    true
+    ${result}    get json value    ${jsondata}    /result
+    ${orders}    run keyword if    ${result}==0    get json value    ${jsondata}    /orders
+    ${msg}    get json value    ${jsondata}    /msg
+    should be equal    ${msg}    ${exepct_msg}
+    should be equal    ${result}    ${exepct_result}
+    [Return]    ${orders}
+
+post_PartyQueryRegResult
+    [Arguments]    ${query_json}    ${exepct_msg}    ${exepct_result}
+    [Documentation]    获取赛事报名统计资料
+    Create Session    httpbin    http://localhost:8080/api/party
+    ${headers}=    Create Dictionary    Content-Type    application/json
+    ${resp}=    post request    httpbin    /    data=${query_json}    headers=${headers}
+    Should Be Equal As Strings    ${resp.status_code}    200
+    log    ${resp.content}
+    ${jsondata}    to json    ${resp.content}    true
+    ${result}    get json value    ${jsondata}    /result
+    ${games}    run keyword if    ${result}==0    get json value    ${jsondata}    /games
+    ${msg}    get json value    ${jsondata}    /msg
+    should be equal    ${msg}    ${exepct_msg}
+    should be equal    ${result}    ${exepct_result}
+    [Return]    ${games}
+
+post_GameQueryRegInfo
+    [Arguments]    ${query_json}    ${exepct_msg}    ${exepct_result}
+    [Documentation]    查询比赛报名统计资料
+    Create Session    httpbin    http://localhost:8080/api/game
+    ${headers}=    Create Dictionary    Content-Type    application/json
+    ${resp}=    post request    httpbin    /    data=${query_json}    headers=${headers}
+    Should Be Equal As Strings    ${resp.status_code}    200
+    log    ${resp.content}
+    ${jsondata}    to json    ${resp.content}    true
+    ${result}    get json value    ${jsondata}    /result
+    ${apply}    run keyword if    ${result}==0    get json value    ${jsondata}    /apply
+    ${payed}    run keyword if    ${result}==0    get json value    ${jsondata}    /payed
+    ${msg}    get json value    ${jsondata}    /msg
+    should be equal    ${msg}    ${exepct_msg}
+    should be equal    ${result}    ${exepct_result}
+    [Return]    ${apply}    ${payed}
+
+post_GameInputScore
+    [Arguments]    ${input_json}    ${exepct_msg}    ${exepct_result}
+    [Documentation]    输入比赛选手成绩
+    Create Session    httpbin    http://localhost:8080/api/game
+    ${headers}=    Create Dictionary    Content-Type    application/json
+    ${resp}=    post request    httpbin    /    data=${input_json}    headers=${headers}
+    Should Be Equal As Strings    ${resp.status_code}    200
+    log    ${resp.content}
+    ${jsondata}    to json    ${resp.content}    true
+    ${result}    get json value    ${jsondata}    /result
+    ${msg}    get json value    ${jsondata}    /msg
+    should be equal    ${msg}    ${exepct_msg}
+    should be equal    ${result}    ${exepct_result}
+
+post_getSMScode
+    [Arguments]    ${input_json}    ${exepct_msg}    ${exepct_result}
+    [Documentation]    验证码
+    Create Session    httpbin    http://localhost:8080/api/user
+    ${headers}=    Create Dictionary    Content-Type    application/json
+    ${resp}=    post request    httpbin    /    data=${input_json}    headers=${headers}
+    Should Be Equal As Strings    ${resp.status_code}    200
+    log    ${resp.content}
+    ${jsondata}    to json    ${resp.content}    true
+    ${result}    get json value    ${jsondata}    /result
+    ${msg}    get json value    ${jsondata}    /msg
+    should be equal    ${msg}    ${exepct_msg}
+    should be equal    ${result}    ${exepct_result}
+
+post_team
+
+post_server
+
+post_user_upload
+
+随机1
+    [Arguments]    ${i}    ${j}
+    ${d}    Evaluate    random.randint(${i},${j})    random
+    log    ${d}
+
+database
+    [Arguments]    ${sql}
+    Connect To Database Using Custom Params    pymysql    host="localhost", port=3306,user="root",passwd="root", db="chinarun",unix_socket="/tmp/mysql.sock",charset ="utf8"
+    ${result}    query    ${sql}
+    Disconnect From Database
+    [Return]    ${result}

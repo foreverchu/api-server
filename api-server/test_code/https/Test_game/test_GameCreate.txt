@@ -1,0 +1,188 @@
+*** Settings ***
+Library           Collections
+Library           String
+Library           HttpLibrary.HTTP
+Library           RequestsLibrary
+Library           string
+Resource          ../../业务关键字.txt
+
+*** Test Cases ***
+test_GameCreate
+    [Documentation]    正常请求，所有的字段均赋值
+    ${d}    gettime    start
+    post_Creategame    {"cmd": "GameCreate", "party_id": "8","name": "跑跑更健康${d}","limitation":3000,"start_time": "2016-01-01 23:04:05", "end_time": "2016-01-15 23:04:05","rmb_price":100.00,"usd_price": 80.00, "gender_req": 0, "min_age_req": 20,"max_age_req": 50,"user_id": "100000"}    ""    0
+
+test_genderis_1
+    [Documentation]    性别值为1
+    ${d}    gettime    start
+    post_Creategame    {"cmd": "GameCreate", "party_id": "2","name": "跑跑更健康${d}aixin","limitation":3000,"start_time": "2006-01-01 23:04:05", "end_time": "2026-01-01 23:04:05","rmb_price":100.00,"usd_price":80.00, "gender_req": 1, "min_age_req": 18,"max_age_req": 50,"user_id": "100000"}    ""    0
+
+test_genderis_2
+    [Documentation]    性别值为2
+    ${d}    gettime    start
+    post_Creategame    {"cmd": "GameCreate", "party_id": "2","name": "跑跑更健康${d}game","limitation":3000,"start_time": "2006-01-01 23:04:05", "end_time": "2026-01-01 23:04:05","rmb_price":100.00,"usd_price": 80.00, "gender_req": 2, "min_age_req": 18,"max_age_req": 50,"user_id": "100000"}    ""    0
+
+test_age_xianzhi_all
+    [Documentation]    年龄限制均赋值，min,max
+    ${d}    gettime    start
+    post_Creategame    {"cmd": "GameCreate", "party_id": "2","name": "跑跑更健康${d}ageall","limitation":3000,"start_time": "2006-01-01 23:04:05", "end_time": "2026-01-01 23:04:05","rmb_price":100.00,"usd_price": 80.00, "gender_req": 2, "min_age_req": 18,"max_age_req": 50,"user_id": "100000"}    ""    0
+
+test_age_xianzhi_min
+    [Documentation]    min为18,max值为默认值0表示不限制
+    ${d}    gettime    start
+    post_Creategame    {"cmd": "GameCreate", "party_id": "2","name": "跑跑更健康${d}min","limitation":3000,"start_time": "2006-01-01 23:04:05", "end_time": "2026-01-01 23:04:05","rmb_price":100.00,"usd_price": 80.00, "gender_req": 2, "min_age_req": 18,"max_age_req": 0,"user_id": "100000"}    ""    0
+
+test_age_xianzhi_max
+    [Documentation]    min为0，不限制最小值,max=50
+    ${d}    gettime    start
+    post_Creategame    {"cmd": "GameCreate", "party_id": "2","name": "跑跑更健康${d}max","limitation":3000,"start_time": "2006-01-01 23:04:05", "end_time": "2006-01-01 23:04:05","rmb_price":100,"usd_price": 80, "gender_req": 2, "min_age_req": 0,"max_age_req": 50,"user_id": "100000"}    ""    0
+
+test_all_mustbe
+    [Documentation]    所有非必填字段均不传递
+    ${d}    gettime    start
+    post_Creategame    {"cmd": "GameCreate", "party_id": "2","name": "跑跑更健康${d}mustbe","limitation":3000,"start_time": "2006-01-01 23:04:05", "end_time": "2026-01-01 23:04:05","rmb_price":100,"usd_price": 80,"user_id": "100000"}    ""    0
+
+test_gender_req_is_null
+    [Documentation]    gender_req为空
+    ${d}    gettime    start
+    post_Creategame    {"cmd": "GameCreate", "party_id": "2","name": "跑跑更健康${d}","limitation":3000,"start_time": "2006-01-01 23:04:05", "end_time": "2026-01-01 23:04:05","rmb_price":100,"usd_price": 80, "gender_req": "", "min_age_req": 18,"max_age_req": 0,"user_id": "100000"}    "无效数据\\ngender_req 参数类型不正确"    -13
+
+test_min_age_is_null
+    [Documentation]    min_age为空
+    ${d}    gettime    start
+    post_Creategame    {"cmd": "GameCreate", "party_id": "2","name": "跑跑更健康${d}max","limitation":3000,"start_time": "2006-01-01 23:04:05", "end_time": "2026-01-01 23:04:05","rmb_price":100,"usd_price": 80, "gender_req": 2, "min_age_req": "","max_age_req": 0,"user_id": "100000"}    "无效数据\\nmin_age_req 参数类型不正确"    -13
+
+test_max_age_is_null
+    [Documentation]    max_age为空
+    ${d}    gettime    start
+    post_Creategame    {"cmd": "GameCreate", "party_id": "2","name": "跑跑更健康${d}max","limitation":3000,"start_time": "${d}", "end_time": "2026-01-01 23:04:05","rmb_price":100.324,"usd_price": 80.3445, "gender_req": 2, "min_age_req": 18,"max_age_req": "","user_id": "100000"}    "无效数据\\nmax_age_req 参数类型不正确"    -13
+
+test_closed_gamecreate
+    [Documentation]    已经关闭的party进行不能创建比赛
+    ${d}    gettime    start
+    post_Creategame    {"cmd": "GameCreate", "party_id": "1","name": "跑跑更健康${d}","limitation":3000,"start_time": "2006-01-01 23:04:05", "end_time": "2026-01-01 23:04:05","rmb_price":100,"usd_price": 80, "gender_req": 0, "min_age_req": 18,"max_age_req": 50,"user_id": "100000"}    "赛事已关闭"    -36
+
+test_partyid_isnull
+    [Documentation]    party_id 为空
+    ${d}    gettime    start
+    post_Creategame    {"cmd": "GameCreate", "party_id": "","name": "跑跑更健康${d}pd","limitation":3000,"start_time": "2006-01-01 23:04:05", "end_time": "2006-01-01 23:04:05","rmb_price":100,"usd_price": 80, "gender_req": 0, "min_age_req": 18,"max_age_req": 50,"user_id": "100000"}    "无效数据\\nparty_id is required"    -13
+
+test_partyid_isnotexsit
+    [Documentation]    partyid 不存在
+    ${d}    gettime    start
+    post_Creategame    {"cmd": "GameCreate", "party_id": "10000","name": "跑跑更健康${d}pd","limitation":3000,"start_time": "2006-01-01 23:04:05", "end_time": "2006-01-01 23:04:05","rmb_price":100,"usd_price": 80, "gender_req": 0, "min_age_req": 18,"max_age_req": 50,"user_id": "100000"}    "无效partyid，赛事不存在"    -9
+
+test_partyid_typeint
+    [Documentation]    partyid,类型为int 类型
+    ${d}    gettime    start
+    post_Creategame    {"cmd": "GameCreate", "party_id": 2,"name": "跑跑更健康${d}pd","limitation":3000,"start_time": "2006-01-01 23:04:05", "end_time": "2006-01-01 23:04:05","rmb_price":100,"usd_price": 80, "gender_req": 0, "min_age_req": 18,"max_age_req": 50,"user_id": "100000"}    "无效数据\\nFailed in paring party_id. errror: type assertion to string failed"    -13
+
+test_thesame_name_01
+    [Documentation]    name 重复，party_id 相同
+    ${d}    gettime    start
+    post_Creategame    {"cmd": "GameCreate", "party_id": "2","name": "一起跑起来","limitation":3000,"start_time": "2006-01-01 23:04:05", "end_time": "2006-01-01 23:04:05","rmb_price":100,"usd_price": 80, "gender_req": 0, "min_age_req": 18,"max_age_req": 50,"user_id": "100000"}    "赛事创建失败，赛事名已存在"    -7
+
+test_thesame_name_02
+    [Documentation]    不同party下创建相同的赛事名称（name 重复，party_id 不相同）
+    ${d}    gettime    start
+    post_Creategame    {"cmd": "GameCreate", "party_id": "5","name": "跑跑更健康3","limitation":3000,"start_time": "${d}", "end_time": "2026-01-01 23:04:05","rmb_price":100,"usd_price": 80, "gender_req": 0, "min_age_req": 18,"max_age_req": 50,"user_id": "100000"}    ""    0
+
+test_limitation_isnull
+    [Documentation]    limitation 为空
+    ${d}    gettime    start
+    post_Creategame    {"cmd": "GameCreate", "party_id": "4","name": "跑跑更健康${d}","limitation":"","start_time": "2006-01-01 23:04:05", "end_time": "2026-01-01 23:04:05","rmb_price":100,"usd_price": 80, "gender_req": 0, "min_age_req": 18,"max_age_req": 50,"user_id": "100000"}    "无效数据\\nFailed in paring limitation. errror: invalid value type"    -13
+
+test_limitation_isString
+    [Documentation]    limitation 为string
+    ${d}    gettime    start
+    post_Creategame    {"cmd": "GameCreate", "party_id": "4","name": "跑跑更健康${d}","limitation":"10000","start_time": "2006-01-01 23:04:05", "end_time": "2026-01-01 23:04:05","rmb_price":100,"usd_price": 80, "gender_req": 0, "min_age_req": 18,"max_age_req": 50,"user_id": "100000"}    "无效数据\\nFailed in paring limitation. errror: invalid value type"    -13
+
+test_limitation_isFloat
+    [Documentation]    limitation 为float
+    ${d}    gettime    start
+    post_Creategame    {"cmd": "GameCreate", "party_id": "4","name": "跑跑更健康${d}","limitation":100.00,"start_time": "2006-01-01 23:04:05", "end_time": "2006-01-01 23:04:05","rmb_price":100,"usd_price": 80, "gender_req": 0, "min_age_req": 18,"max_age_req": 50,"user_id": "100000"}    "无效数据\\nFailed in paring limitation. errror: strconv.ParseInt: parsing \\"100.00\\": invalid syntax"    -13
+
+test_starttime_isnotsend
+    [Documentation]    starttime 不传递
+    ${d}    gettime    start
+    post_Creategame    {"cmd": "GameCreate", "party_id": "4","name": "跑跑更健康${d}","limitation":10000,"end_time": "2006-01-01 23:04:05","rmb_price":100,"usd_price":80,"gender_req": 0, "min_age_req": 18,"max_age_req": 50,"user_id": "100000"}    "无效数据\\nstart_time is required"    -13
+
+test_starttime_isdatetime
+    [Documentation]    start 为本地获取的时间
+    ${d}    gettime    start
+    post_Creategame    {"cmd": "GameCreate", "party_id": "5","name": "跑跑更健康${d}","limitation":100000,"start_time":"${d}", "end_time": "2026-01-01 23:04:05","rmb_price":100,"usd_price": 80, "gender_req": 0, "min_age_req": 18,"max_age_req": 50,"user_id": "100000"}    ""    0
+
+test_rmbprice_isint
+    [Documentation]    rmbprice 为 int
+    ${d}    gettime    start
+    post_Creategame    {"cmd": "GameCreate", "party_id": "5","name": "跑跑更健康gamecreate${d}","limitation":10000,"start_time": "2006-01-01 23:04:05", "end_time": "2026-01-01 23:04:05","rmb_price":100,"usd_price": 80, "gender_req": 0, "min_age_req": 18,"max_age_req": 50,"user_id": "100000"}    ""    0
+
+test_rmbprice_isString
+    [Documentation]    rmbprice 为String类型
+    ${d}    gettime    start
+    post_Creategame    {"cmd": "GameCreate", "party_id": "2","name": "跑跑更健康${d}","limitation":3000,"start_time": "${d}", "end_time": "2006-01-01 23:04:05","rmb_price":"100","usd_price": 80, "gender_req": 0, "min_age_req": 18,"max_age_req": 50,"user_id": "100000"}    "无效数据\\nFailed in paring rmb_price. errror: invalid value type"    -13
+
+test_usbprice_isint
+    [Documentation]    usbprice 为 int
+    ${d}    gettime    start
+    post_Creategame    {"cmd": "GameCreate", "party_id": "5","name": "跑跑更健康createusbprice${d}","limitation":100,"start_time": "${d}", "end_time": "2026-01-01 23:04:05","rmb_price":100,"usd_price": 80, "gender_req": 0, "min_age_req": 18,"max_age_req": 50,"user_id": "100000"}    ""    0
+
+test_usbprice_isString
+    [Documentation]    usbprice 为 string
+    ${d}    gettime    start
+    post_Creategame    {"cmd": "GameCreate", "party_id": "4","name": "跑跑更健康${d}","limitation":1000,"start_time": "2006-01-01 23:04:05", "end_time": "2006-01-01 23:04:05","rmb_price":100,"usd_price": "80", "gender_req": 0, "min_age_req": 18,"max_age_req": 50,"user_id": "100000"}    "无效数据\\nFailed in paring usd_price. errror: invalid value type"    -13
+
+test_user_id_typeis_int
+    [Documentation]    user_id 为int
+    ${d}    gettime    start
+    post_Creategame    {"cmd": "GameCreate", "party_id": "5","name": "跑跑更健康${d}","limitation":100,"start_time": "${d}", "end_time": "2026-01-01 23:04:05","rmb_price":100,"usd_price": 80, "gender_req": 0, "min_age_req": 18,"max_age_req": 50,"user_id": 100000}    "无效数据\\nFailed in paring user_id. errror: type assertion to string failed"    -13
+
+test_gender_overnum
+    [Documentation]    性别gender数值 为3
+    ${d}    gettime    start
+    post_Creategame    {"cmd": "GameCreate", "party_id": "5","name": "跑跑更健康cregamegender${d}","limitation":100,"start_time": "${d}", "end_time": "2026-01-01 23:04:05","rmb_price":100,"usd_price": 80, "gender_req": 3, "min_age_req": 18,"max_age_req": 50,"user_id": "100000"}    "无效数据\\ngender_req 应小于等于2"    -13
+
+test_gender_typeisfloat
+    [Documentation]    gender 为float
+    ${d}    gettime    start
+    post_Creategame    {"cmd": "GameCreate", "party_id": "5","name": "跑跑更健康${d}","limitation":10000,"start_time": "${d}", "end_time": "2026-01-01 23:04:05","rmb_price":100,"usd_price": 80, "gender_req": 1.0, "min_age_req": 18,"max_age_req": 50,"user_id": "100000"}    "无效数据\\ngender_req 参数类型不正确"    -13
+
+test_min_age_isString
+    [Documentation]    min_age 为string
+    ${d}    gettime    start
+    post_Creategame    {"cmd": "GameCreate", "party_id": "5","name": "跑跑更健康${d}","limitation":10000,"start_time": "${d}", "end_time": "2026-01-01 23:04:05","rmb_price":100,"usd_price": 80, "gender_req": 10, "min_age_req": "18","max_age_req": 50,"user_id": "100000"}    "无效数据\\nmin_age_req 参数类型不正确"    -13
+
+test_wp_userid_isint
+    [Documentation]    user_id 为int
+    ${d}    gettime    start
+    post_Creategame    {"cmd": "GameCreate", "party_id": "5","name": "跑跑更健康${d}","limitation":100,"start_time": "${d}", "end_time": "2026-01-01 23:04:05","rmb_price":100,"usd_price": 80, "gender_req": 1, "min_age_req": 18,"max_age_req": 50,"user_id": 100000}    "无效数据\\nFailed in paring user_id. errror: type assertion to string failed"    -13
+
+test_wp_userid_is_null
+    [Documentation]    user_id 为null
+    ${d}    gettime    start
+    post_Creategame    {"cmd": "GameCreate", "party_id": "5","name": "跑跑更健康${d}","limitation":10000,"start_time": "${d}", "end_time": "2026-01-01 23:04:05","rmb_price":100,"usd_price": 80, "gender_req": 1, "min_age_req": 18,"max_age_req": 50,"user_id": ""}    "无效数据\\nuser_id is required"    -13
+
+test_cmdisnull
+    [Documentation]    cmd 为null
+    ${d}    gettime    start
+    post_Creategame    {"cmd": "", "party_id": "4","name": "跑跑更健康${d}","limitation":100.00,"start_time": "2006-01-01 23:04:05", "end_time": "2006-01-01 23:04:05","rmb_price":"100","usd_price": "80", "gender_req": 1.0, "min_age_req": "18","max_age_req": "50","user_id": ""}    "没有设置cmd参数"    -1003
+
+test_cmd_isnotexsit
+    [Documentation]    cmd 没有传递
+    ${d}    gettime    start
+    post_Creategame    {"party_id": "2","name": "跑跑更健康${d}","limitation":3000,"start_time": "2006-01-01 23:04:05", "end_time": "2006-01-01 23:04:05","rmb_price":100.00,"usd_price": 80.00, "gender_req": 0, "min_age_req": 18,"max_age_req": 50,"user_id": "100000"}    "没有设置cmd参数"    -1003
+
+test_cmd_iserror
+    [Documentation]    cmd 输入错误
+    ${d}    gettime    start
+    post_Creategame    {"cmd": "Gamereate", "party_id": "4","name": "跑跑更健康${d}","limitation":100.00,"start_time": "2006-01-01 23:04:05", "end_time": "2006-01-01 23:04:05","rmb_price":"100","usd_price": "80", "gender_req": 1.0, "min_age_req": "18","max_age_req": "50","user_id": ""}    "无效cmd\\n未知的cmd"    -1004
+
+test_logic_age
+    [Documentation]    min_age>max_age
+    ${d}    gettime    start
+    post_Creategame    {"cmd": "GameCreate", "party_id": "2","name": "跑跑更健康${d}","limitation":3000,"start_time": "2006-01-01 23:04:05", "end_time": "2006-01-01 23:04:05","rmb_price":100.00,"usd_price": 80.00, "gender_req": 0, "min_age_req": 50,"max_age_req": 18,"user_id": "100000"}    "无效数据\\n最小年龄应该大于最大年龄"    -13
+
+test_rmbprice_isNegative
+    [Documentation]    rmb_price 为-1.00
+    ${d}    gettime    start
+    post_Creategame    {"cmd": "GameCreate", "party_id": "2","name": "跑跑更健康${d}","limitation":3000,"start_time": "2006-01-01 23:04:05", "end_time": "2026-01-01 23:04:05","rmb_price":-1.00,"usd_price": 80.00, "gender_req": 0, "min_age_req": 0,"max_age_req": 38,"user_id": "100000"}    "无效数据"    -13

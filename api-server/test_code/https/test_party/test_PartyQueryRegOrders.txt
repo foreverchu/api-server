@@ -1,0 +1,169 @@
+*** Settings ***
+Library           Collections
+Library           String
+Library           HttpLibrary.HTTP
+Library           RequestsLibrary
+Library           string
+Resource          ../../业务关键字.txt
+
+*** Test Cases ***
+test_partyQueryRegOrders
+    [Documentation]    正常查询该，所有的字段均传递，返回支付订单为0，订单号匹配
+    ${order_no}    set variable    xxxxxxx
+    post_PartyQueryRegOrders    {"cmd": "PartyQueryRegOrders","party_id": "1", "order_no": "${order_no}", "certificate_type": 0, "certificate_no": "320322199007183891", "pay_status":0,"page_no": 1, "page_size": 10}    ""    0
+
+test_partyid_isnotexsit
+    [Documentation]    partyid不存在，查询失败
+    post_PartyQueryRegOrders    {"cmd": "PartyQueryRegOrders","party_id": "100000"}    "无效比赛id"    -10
+
+test_partyid_allmust
+    [Documentation]    partyid存在，非必须字段不传递， 返回该比赛下所有的订单
+    post_PartyQueryRegOrders    {"cmd": "PartyQueryRegOrders","party_id": "1"}    ""    0
+
+test_queryorder_by_orderno_and_cert
+    [Documentation]    订单号＋身份证号查询
+    ${order_no}    set variable    xxxxxxx
+    post_PartyQueryRegOrders    {"cmd": "PartyQueryRegOrders","party_id": "1","order_no": "${order_no}", "certificate_type": 0, "certificate_no": "320322199007183891"}    ""    0
+
+test_queryorder_by_orderno_01
+    [Documentation]    根据订单号查询 （证件类型、证件号均不传递）
+    ${order_no}    set variable    xxxxxxx
+    post_PartyQueryRegOrders    {"cmd": "PartyQueryRegOrders","party_id": "1","order_no": "${order_no}"}    ""    0
+
+test_queryorder_by_orderno_02
+    [Documentation]    根据订单号查询 （证件类型存在、证件号不存在）
+    ${order_no}    set variable    xxxxxxx
+    post_PartyQueryRegOrders    {"cmd": "PartyQueryRegOrders","party_id": "1","order_no": "${order_no}","certificate_type": 0}    ""    0
+
+test_queryorder_by_orderno_02
+    [Documentation]    根据订单号查询 （证件类型存在、证件号不存在）
+    ${order_no}    set variable    xxxxxxx
+    post_PartyQueryRegOrders    {"cmd": "PartyQueryRegOrders","party_id": "1","order_no": "${order_no}","certificate_type": 0}    ""    0
+
+test_queryorder_by_cert_iDCard
+    [Documentation]    根据身份证件号查询
+    post_PartyQueryRegOrders    {"cmd": "PartyQueryRegOrders","party_id": "1","certificate_type": 0,"certificate_no": "320322199007183891"}    ""    0
+
+test_queryorder_by_cert_passport
+    [Documentation]    根据护照号查询
+    post_PartyQueryRegOrders    {"cmd": "PartyQueryRegOrders","party_id": "1","certificate_type": 1,"certificate_no": "320322199007183891"}    ""    0
+
+test_queryorder_by_cert_Military_officer
+    [Documentation]    根据军官证查询
+    post_PartyQueryRegOrders    {"cmd": "PartyQueryRegOrders","party_id": "1","certificate_type": 2,"certificate_no": "320322199007183891"}    ""    0
+
+test_queryorder_by_cert_MTPS
+    [Documentation]    根据台胞证查询
+    post_PartyQueryRegOrders    {"cmd": "PartyQueryRegOrders","party_id": "1","certificate_type": 3,"certificate_no": "320322199007183891"}    ""    0
+
+test_queryorder_by_cert_Permit
+    [Documentation]    根据港澳通行证查询
+    post_PartyQueryRegOrders    {"cmd": "PartyQueryRegOrders","party_id": "1","certificate_type": 4,"certificate_no": "320322199007183891"}    ""    0
+
+test_queryorder_by_cert_HVPS
+    [Documentation]    根据回乡证查询
+    post_PartyQueryRegOrders    {"cmd": "PartyQueryRegOrders","party_id": "1","certificate_type": 5,"certificate_no": "320322199007183891"}    ""    0
+
+test_queryorder_by_cert_type_notmatch_no_01
+    [Documentation]    证件类型不存在、证件号存在，（查询失败）
+    post_PartyQueryRegOrders    {"cmd": "PartyQueryRegOrders","party_id": "1","certificate_no": "320322199007183891"}    "查询失败"    －1002
+
+test_queryorder_by_cert_type_notmatch_no_02
+    [Documentation]    证件类型存在、证件号不存在，（查询失败）
+    post_PartyQueryRegOrders    {"cmd": "PartyQueryRegOrders","party_id": "1","certificate_type": 5}    "查询失败"    －1002
+
+test_queryorder_by_cert_type_notmatch_no_03
+    [Documentation]    证件类型不存在、证件号存在，（查询失败）
+    post_PartyQueryRegOrders    {"cmd": "PartyQueryRegOrders","party_id": "1","certificate_no": "320322199007183891"}    "查询失败"    －1002
+
+test_queryorder_by_paystatus_0
+    [Documentation]    该比赛，支付状态为0（待支付）订单查询
+    post_PartyQueryRegOrders    {"cmd": "PartyQueryRegOrders","party_id": "1", "pay_status":0}    ""    0
+
+test_queryorder_by_paystatus_1
+    [Documentation]    该比赛，支付状态为1（已支付）订单查询
+    post_PartyQueryRegOrders    {"cmd": "PartyQueryRegOrders","party_id": "1", "pay_status":0}    ""    0
+
+test_queryorder_by_paystatus_2
+    [Documentation]    该比赛，支付状态为2（2已取消）订单查询
+    post_PartyQueryRegOrders    {"cmd": "PartyQueryRegOrders","party_id": "1", "pay_status":0}    ""    0
+
+test_queryorder_by_paystatus_3
+    [Documentation]    该比赛，支付状态为3（3已退款）订单查询
+    post_PartyQueryRegOrders    {"cmd": "PartyQueryRegOrders","party_id": "1", "pay_status":0}    ""    0
+
+test_pageno_pagesize_01
+    [Documentation]    pageno为1，pagesize 为20（订单数量总数100），返回从21个开始
+    post_PartyQueryRegOrders    {"cmd": "PartyQueryRegOrders","party_id": "1","page_no": 1, "page_size": 10}    ""    0
+
+test_pageno_pagesize_02
+    [Documentation]    pageno为6，pagesize 为20（订单数量总数100），返回空
+    post_PartyQueryRegOrders    {"cmd": "PartyQueryRegOrders","party_id": "1","page_no": 1, "page_size": 10}    ""    0
+
+test_cmd_null
+    [Documentation]    cmd空，查询失败
+    post_PartyQueryRegOrders    {"cmd": "","party_id": "1"}    "没有设置cmd参数"    -1003
+
+test_cmd_type_int
+    [Documentation]    cmd 字段类型不正确，为int
+    post_PartyQueryRegOrders    {"cmd":1,"party_id": "1"}    "cmd类型不正确"    -1003
+
+test_cmd_isnotsend
+    [Documentation]    cmd 不传递，查询失败
+    post_PartyQueryRegOrders    {"party_id": "1"}    "没有设置cmd参数"    -1003
+
+test_partyid_type_int
+    [Documentation]    partyid 类型为int
+    post_PartyQueryRegOrders    {"cmd":"PartyQueryRegOrders","party_id":1}    "无效数据\\nFailed in paring party_id. errror: type assertion to string failed"    -13
+
+test_orderno_type_int
+    [Documentation]    orderno 参数类型不正确，为int
+    post_PartyQueryRegOrders    {"cmd": "PartyQueryRegOrders","party_id": "1","order_no": 1}    "无效数据\\nFailed in paring order_no. errror: type assertion to string failed"    -13
+
+test_orderno_certificate_typeString
+    [Documentation]    certificate_type 类型为String
+    post_PartyQueryRegOrders    {"cmd": "PartyQueryRegOrders","party_id": "1","certificate_type": "0", "certificate_no": "320322199007183891"}    "无效数据\\ncertificate_type 参数类型不正确"    -13
+
+test_orderno_certificate_typeovernum
+    [Documentation]    certificate_typeover为5
+    post_PartyQueryRegOrders    {"cmd": "PartyQueryRegOrders","party_id": "1","certificate_type": 5, "certificate_no": "320322199007183891"}    "无效数据\\ncertificate_type 参数类型不正确"    -13
+
+test_orderno_certificate_Negative_number
+    [Documentation]    certificate_typeover为负数，－1
+    post_PartyQueryRegOrders    {"cmd": "PartyQueryRegOrders","party_id": "1","certificate_type":-1, "certificate_no": "320322199007183891"}    "无效数据\\ncertificate_type should great than or equal to 0"    -13
+
+test_orderno_certificate_float
+    [Documentation]    certificate_typeover为负数，1.00
+    post_PartyQueryRegOrders    {"cmd": "PartyQueryRegOrders","party_id": "1","certificate_type":1.00, "certificate_no": "320322199007183891"}    "无效数据\\ncertificate_type 参数类型不正确"    -13
+
+test_orderno_certificateno_notexsit
+    [Documentation]    certificateno 此数据不存在此赛事下
+    post_PartyQueryRegOrders    {"cmd": "PartyQueryRegOrders","party_id": "1","certificate_type": 0, "certificate_no": 320312199007183891}    "无效数据\\nFailed in paring certificate_no. errror: type assertion to string failed"    -13
+
+test_orderno_certificaten_noisnull
+    [Documentation]    certificaten_no 为空
+    post_PartyQueryRegOrders    {"cmd": "PartyQueryRegOrders","party_id": "1","certificate_type": 5, "certificate_no": ""}    ""    0
+
+test_pageno_Negative_number
+    [Documentation]    pageno 为负数，－1
+    post_PartyQueryRegOrders    {"cmd": "PartyQueryRegOrders","party_id": "1","page_no":-1, "page_size": 10}    ""    -13
+
+test_pageno_float
+    [Documentation]    pageno 为float, 1.00
+    post_PartyQueryRegOrders    {"cmd": "PartyQueryRegOrders","party_id": "1","page_no":1.00, "page_size": 10}    "无效数据\\nFailed in paring page_no. errror: strconv.ParseInt: parsing \\"1.00\\": invalid syntax"    -13
+
+test_pageno_String
+    [Documentation]    pageno 为String
+    post_PartyQueryRegOrders    {"cmd": "PartyQueryRegOrders","party_id": "1","page_no":"1", "page_size": 10}    "无效数据\\nFailed in paring page_no. errror: invalid value type"    -13
+
+test_paystatus_Negative_number
+    [Documentation]    paystatus字段类型为负数时 －1
+    post_PartyQueryRegOrders    {"cmd": "PartyQueryRegOrders","party_id": "1", "pay_status":-1}    ""    -1003
+
+test_paystatus_float
+    [Documentation]    paystatus 类型为float
+    post_PartyQueryRegOrders    {"cmd": "PartyQueryRegOrders","party_id": "1", "pay_status":1.00}    "无效数据\\nFailed in paring pay_status. errror: strconv.ParseInt: parsing \\"1.00\\": invalid syntax"    -13
+
+test_paystatus_string
+    [Documentation]    paystatus 类型为string
+    post_PartyQueryRegOrders    {"cmd": "PartyQueryRegOrders","party_id": "1", "pay_status":"1"}    "无效数据\\nFailed in paring pay_status. errror: invalid value type"    -13

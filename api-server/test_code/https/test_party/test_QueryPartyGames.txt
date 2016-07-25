@@ -1,0 +1,38 @@
+*** Settings ***
+Library           Collections
+Library           String
+Library           HttpLibrary.HTTP
+Library           RequestsLibrary
+Library           string
+Resource          ../../业务关键字.txt
+
+*** Test Cases ***
+test_queryParty_Games
+    ${game}    post_QuerypartyGame    {"cmd":"PartyQueryGames","party_id":"2"}    ""    0
+    log    ${game}
+
+test_cmd_isnotsend
+    post_QuerypartyGame    {"party_id":2}    "没有设置cmd参数"    -1003
+
+test_cmd_is_null
+    [Documentation]    cmd 为空“”
+    post_QuerypartyGamety    {"cmd":"","party_id":"2"}    "没有设置cmd参数"    -1003
+
+test_cmd_is_int
+    [Documentation]    cmd 为int
+    post_QuerypartyGame    {"cmd":123,"party_id":"2"}    "无效cmd"    -1004
+
+test_partyid_notsend
+    [Documentation]    paryid 不传递
+    post_QuerypartyGame    {"cmd":"PartyQueryGames"}    "无效数据\\n需要party_id参数"    -13
+
+test_partyid_null
+    [Documentation]    partyid 为null
+    post_QuerypartyGame    {"cmd":"PartyQueryGames","party_id":null}    "无效partyid，赛事不存在\\n不合法的party_id\\ntype assertion to string failed"    -9
+
+test_partyid_isnotexsit
+    [Documentation]    partyid \ is 不传递
+    post_QuerypartyGame    {"cmd":"PartyQueryGames","party_id":"10003"}    "无效数据\\n无效的赛事id"    -13
+
+test_partyid_int
+    post_QuerypartyGame    {"cmd":"PartyQueryGames","party_id":2}    "无效partyid，赛事不存在\\n不合法的party_id\\ntype assertion to string failed"    -9

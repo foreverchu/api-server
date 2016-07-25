@@ -1,0 +1,42 @@
+*** Settings ***
+Library           Collections
+Library           String
+Library           HttpLibrary.HTTP
+Library           RequestsLibrary
+Library           string
+Resource          ../../业务关键字.txt
+
+*** Test Cases ***
+test_getSMS_code
+    [Documentation]    正确的手机号获取验证码
+    post_getSMScode    {"cmd":"UserRegisterSMSCode","phone":"13918739640"}    ""    0
+    ${sms_code}    database    select code from smscode where phone=13918739640 order by id desc limit 1
+    log    ${sms_code[0][0]}
+
+test_getSMS_code_pinfan
+    [Documentation]    正确的手机号获取验证码过于频繁（本情况依赖于上一个用例）
+    post_getSMScode    {"cmd":"UserRegisterSMSCode","phone":"18101635160"}    "无效数据\\n请求短信验证码过于频繁"    -13
+
+test_getSMS_code_error_phone
+    [Documentation]    错误的手机号
+    post_getSMScode    {"cmd":"UserRegisterSMSCode","phone":"1361187385"}    "无效数据\\n手机号码格式不正确"    -13
+
+test_getSMS_code_phone_type_iserror
+    [Documentation]    phone传入int类型
+    post_getSMScode    {"cmd":"UserRegisterSMSCode","phone":13611873856}    "无效数据\\n手机号码格式不正确"    -13
+
+test_getSMS_code_phone_null
+    [Documentation]    phone传入空
+    post_getSMScode    {"cmd":"UserRegisterSMSCode","phone":""}    "无效数据\\n手机号码格式不正确"    -13
+
+test_getSMS_code_phone_notsend
+    [Documentation]    phone字段不进行传递
+    post_getSMScode    {"cmd":"UserRegisterSMSCode"}    "无效数据\\n手机号码格式不正确"    -13
+
+test_getSMS_code_cmd_null
+    [Documentation]    CMD数值为空
+    post_getSMScode    {"cmd":"","phone":"1361187385"}    "没有设置cmd参数"    -1003
+
+test_getSMS_code_cmd_notsend
+    [Documentation]    CMD不传递
+    post_getSMScode    {"cmd":"","phone":"1361187385"}    "没有设置cmd参数"    -1003

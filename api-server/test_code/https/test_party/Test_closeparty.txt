@@ -1,0 +1,36 @@
+*** Settings ***
+Library           Collections
+Library           String
+Library           HttpLibrary.HTTP
+Library           RequestsLibrary
+Library           string
+Resource          ../../业务关键字.txt
+
+*** Test Cases ***
+test_closeparty
+    [Documentation]    正常关闭赛事
+    ${d}    gettime    start
+    ${party_id}    post_Createparty    {"cmd": "PartyCreate","party_name": "上海马拉松${d}linshi","limitation": 100000,"limitation_type": 1, "country": "中国","province": "上海","city": "上海","addr": "上海松江", "loc_long": 31.2303950509,"loc_lat": 121.4736999111,"extra_info_json": "{\\"party_blog_id\\": 2,\\"party_type\\":\\"牛人跑\\"}","reg_start_time": "2006-01-19 15:04:05","reg_end_time": "2006-01-19 15:04:05","start_time": "2006-04-02 15:04:05","end_time": "2026-05-02 15:04:05","user_id": "100000"}    ""    0
+    post_party    {"cmd": "PartyClose","party_id":${party_id}}    ""    0
+
+test_closed_party
+    [Documentation]    关闭已经关闭的赛事
+    post_party    {"cmd": "PartyClose","party_id":"1"}    "用户无此权限\\n赛事已经关闭, 不可重复关闭"    -11
+
+test_party_id_notexsit
+    [Documentation]    关闭party_id \ 不存在的赛事
+    post_party    {"cmd": "PartyClose","party_id":"100001"}    "无效数据\\n无效的赛事id"    -13
+
+test_cmd_int
+    [Documentation]    cmd类型不正确 为int类型
+    post_party    {"cmd": 1,"party_id":3}    "cmd类型不正确"    -1004
+
+test_cmd_is_null
+    post_party    {"party_id":"100001"}    "没有设置cmd参数"    -1003
+
+test_all_is_null
+    post_party    null    "没有设置cmd参数"    -1003
+
+test_party_id_isint
+    [Documentation]    partyid 为int类型
+    post_party    {"cmd": "PartyClose","party_id":4}    "无效数据\\n不合法的party_id"    -13

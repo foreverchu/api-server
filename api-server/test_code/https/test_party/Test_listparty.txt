@@ -1,0 +1,84 @@
+*** Settings ***
+Library           Collections
+Library           String
+Library           HttpLibrary.HTTP
+Library           RequestsLibrary
+Library           string
+Resource          ../../业务关键字.txt
+
+*** Test Cases ***
+test_listparty
+    [Documentation]    接口输入参数验证－－－正常请求
+    post_party    {"cmd":"PartyList","page_no":0,"page_size":10,"order_by":"start_time","include_close":0}    ""    0
+
+test_listparty_01
+    [Documentation]    接口输入参数验证 ，包含已经关闭的party
+    post_party    {"cmd":"PartyList","page_no":0,"page_size":10,"order_by":"start_time","include_close":1}    ""    0
+
+test_listparty_byuserid
+    [Documentation]    按照user_id 查询
+    post_party    {"cmd":"PartyList","page_no":0,"page_size":10,"order_by":"start_time","include_close":0,"user_id":"10000","type":0}    ""    0
+
+test_listparty_bytype02
+    [Documentation]    查询user_id创建
+    post_party    {"cmd":"PartyList","page_no":0,"page_size":10,"order_by":"start_time","include_close":0,"user_id":"10000","type":2}    ""    0
+
+test_listparty_bytype03
+    [Documentation]    查询user_id关注的比赛
+    post_party    {"cmd":"PartyList","page_no":0,"page_size":10,"order_by":"start_time","include_close":0,"user_id":"10000","type":3}    ""    0
+
+test_is_mustbe
+    [Documentation]    默认值检查
+    post_party    {"cmd":"PartyList"}    ""    0
+
+test_pageno_logic_01
+    [Documentation]    分页逻辑验证(page_no:0)
+    post_party    {"cmd":"PartyList","page_no":0,"page_size":10,"order_by":"start_time","exclude_close":0}    ""    0
+
+test_pageno_logic_02
+    [Documentation]    分页逻辑验证 (page_no:1)
+    post_party    {"cmd":"PartyList","page_no":1,"page_size":10,"order_by":"start_time","exclude_close":0}    ""    0
+
+test_pageno_logic_03
+    [Documentation]    分页逻辑验证(page_no:2)
+    post_party    {"cmd":"PartyList","page_no":2,"page_size":10,"order_by":"start_time","exclude_close":0}    ""    0
+
+test_pageno_logic_04
+    [Documentation]    分页逻辑验证(page_no:4)
+    post_party    {"cmd":"PartyList","page_no":4,"page_size":10,"order_by":"start_time","exclude_close":0}    ""    0
+
+test_pageno_logic_05
+    [Documentation]    分页逻辑验证(page_no:4)
+    post_party    {"cmd":"PartyList","page_no":5,"page_size":10,"order_by":"start_time","exclude_close":0}    ""    0
+
+test_pageno_logic_06
+    [Documentation]    分页逻辑验证(page_no:0,page_size:40)
+    post_party    {"cmd":"PartyList","page_no":6,"page_size":10,"order_by":"start_time","exclude_close":0}    ""    0
+
+test_exclude_close
+    [Documentation]    exculede_close 为1
+    post_party    {"cmd":"PartyList","page_no":1,"page_size":40,"order_by":"start_time","exclude_close":1}    ""    0
+
+test_cmd_typeerror_int
+    [Documentation]    cmd 类型不正确为int
+    post_party    {"cmd":1,"page_no":0,"page_size":40,"order_by":"start_time","exclude_close":0}    "无效cmd"    -1004
+
+test_pageno_typeerro_String
+    [Documentation]    page_no 类型不正确 String
+    post_party    {"cmd":"PartyList","page_no":"0","page_size":40,"order_by":"start_time","exclude_close":0}    "无效数据\\nFailed in paring page_no. errror: invalid value type"    -13
+
+test_pagesize_typeerro
+    [Documentation]    pagse_size 类型不正确 String
+    post_party    {"cmd":"PartyList","page_no":0,"page_size":"40","order_by":"start_time","exclude_close":0}    "无效数据\\nFailed in paring page_size. errror: invalid value type"    -13
+
+test_orderby_typeerror
+    [Documentation]    order by 为数字0
+    post_party    {"cmd":"PartyList","page_no":0,"page_size":40,"order_by": 0,"exclude_close":0}    "无效数据\\nFailed in paring order_by. errror: type assertion to string failed"    -13
+
+test_exclude_close_typeerror
+    [Documentation]    exclude_close 类型不正确，为String类型
+    post_party    {"cmd":"PartyList","page_no":0,"page_size":40,"order_by": 0,"exclude_close": "0"}    "无效数据\\nFailed in paring order_by. errror: type assertion to string failed"    -13
+
+test_post_typeerror
+    [Documentation]    exclude_close 类型不正确
+    post_party    null    "没有设置cmd参数"    -1003

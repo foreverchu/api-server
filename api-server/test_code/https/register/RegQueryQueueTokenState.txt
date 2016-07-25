@@ -1,0 +1,45 @@
+*** Settings ***
+Library           Collections
+Library           String
+Library           HttpLibrary.HTTP
+Library           RequestsLibrary
+Library           string
+Resource          ../../业务关键字.txt
+
+*** Test Cases ***
+test_tokenstatequery
+    [Documentation]    查询排队中的token(tokenid有效,queue_state=0, result=0)
+    ${token}    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+    post_RegQueryQueueTokenState    {"cmd": "RegQueryQueueTokenState","token": "$token"}    ""    0
+
+test_tokenid_isnotvalue
+    [Documentation]    失效的tokenid，返回错误码,result 为-12
+    post_RegQueryQueueTokenState    {"cmd": "RegQueryQueueTokenState","token":    ""}    "无效的tokenid"    -12
+
+test_tokenid_notexsit
+    [Documentation]    tokenid为已经成功支付的tokenid
+    post_RegQueryQueueTokenState    {"cmd": "RegQueryQueueTokenState","token": ""}    "无效的tokenid"    -12
+
+test_tokenid_success
+    [Documentation]    tokenid，成功返回订单号
+    post_RegQueryQueueTokenState    {"cmd": "RegQueryQueueTokenState","token": ""}    ""    0
+
+test_fullname
+    [Documentation]    tokenid，返回名额已满(partylimitation名额已满)
+    post_RegQueryQueueTokenState    {"cmd": "RegQueryQueueTokenState","token": ""}    "名额已满"    0
+
+test_cmd_type_int
+    [Documentation]    cmd 为int
+    post_RegQueryQueueTokenState    {"cmd":1,"token": ""}    "cmd类型不正确"    －1003
+
+test_cmd_iserror
+    [Documentation]    cmd 错误，大小写
+    post_RegQueryQueueTokenState    {"cmd": "RegQueryqueueTokenState","token": ""}    "cmd不存在"    －1003
+
+test_token_isnull
+    [Documentation]    token 不传递
+    post_RegQueryQueueTokenState    {"cmd": "RegQueryqueueTokenState"}    "token是需要的字段"    -1003
+
+test_token_isempty
+    [Documentation]    token 为空
+    post_RegQueryQueueTokenState    {"cmd": "RegQueryqueueTokenState","token":""}    "不能为空"    -1003

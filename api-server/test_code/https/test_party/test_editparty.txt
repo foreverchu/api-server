@@ -1,0 +1,99 @@
+*** Settings ***
+Library           Collections
+Library           String
+Library           HttpLibrary.HTTP
+Library           RequestsLibrary
+Library           string
+Resource          ../../业务关键字.txt
+
+*** Test Cases ***
+test_editparty
+    [Documentation]    必填均赋值
+    [Tags]    edit
+    ${d}    gettime    start
+    post_party    {"cmd": "PartyEdit","party_id": "2","party_name": "上海马拉松2${d}","limitation": 10000,"limitation_type":1,"country": "西班牙","province": "","city": "不限","addr": "不限","loc_long":10.3434,"loc_lat":14.34234 ,"extra_info_json": "{\\"party_blog_id\\": 2,\\"party_type\\":\\"牛人跑\\"}","reg_start_time": "2006-01-02 07:04:05","reg_end_time": "2006-01-02 07:04:05","start_time": "2006-01-02 07:04:05", "end_time": "2026-01-02 07:04:05","user_id": "100000"}    ""    0
+
+test_editparty_bitian_isall
+    [Documentation]    比填均赋值，非必填的均不传递值
+    ${d}    gettime    start
+    post_party    {"cmd": "PartyEdit","party_id": "2","party_name": "上海马拉松2${d}", "reg_start_time": "2006-01-02 07:04:05","reg_end_time": "2006-01-02 07:04:05","start_time": "2006-01-02 07:04:05", "end_time": "2006-01-02 07:04:05","user_id": "100000"}    ""    0
+
+test_limitation_isnull
+    [Documentation]    limitation为空
+    post_party    {"cmd": "PartyEdit","party_id": "1","party_name": "上海马拉松","limitation": "","limitation_type":1,"country": "不限","province": "","city": "","addr": "不限","loc_long": 10.982343,"loc_lat": 13.32232,"website": "","mp_id": "","extra_info_json": "","reg_start_time": "2006-01-02 07:04:05","reg_end_time": "2006-01-02 07:04:05","start_time": "2006-01-02 07:04:05", "end_time": "2006-01-02 07:04:05","user_id": "100000"}    "无效数据\\nFailed in paring limitation. errror: invalid value type"    -13
+
+test_limitation_isnotsend
+    [Documentation]    limitation不传递
+    ${d}    gettime    start
+    post_party    {"cmd": "PartyEdit","party_id": "5","party_name": "上海马拉松eidtlimitaion${d}","limitation_type":1,"country": "不限","province": "","city": "","addr": "不限","loc_long": 10.982343,"loc_lat": 13.32232,"website": "","mp_id": "","extra_info_json": "{\\"paryid\\":\\"10001\\"}","reg_start_time": "2006-01-02 07:04:05","reg_end_time": "2006-01-02 07:04:05","start_time": "2006-01-02 07:04:05", "end_time": "2026-01-02 07:04:05","user_id": "100000"}    ""    0
+
+test_limitation_type_is_null
+    [Documentation]    limitation_type为空
+    ${d}    gettime    start
+    post_party    {"cmd": "PartyEdit","party_id": "4ge","party_name": "上海马拉松${d}","limitation": 1000,"limitation_type":"","country":"不限","province": "","city": "","addr": "不限","loc_long": 10.223423,"loc_lat": 14.23423,"website": "","mp_id": "","extra_info_json": "{\\"key\\":\\"value\\"}","reg_start_time": "2006-01-02 07:04:05","reg_end_time": "2006-01-02 07:04:05","start_time": "2006-01-02 07:04:05", "end_time": "2006-01-02 07:04:05","user_id": "100000"}    "无效数据\\nlimitation_type 参数类型不正确"    -13
+
+test_limitation_type_isnotsend
+    [Documentation]    limitation_type 不传递
+    ${d}    gettime    start
+    post_party    {"cmd": "PartyEdit","party_id": "5","party_name": "上海马拉松eidtlimtype${d}","limitation": 1000,"country": "系半夜","province": "","city": "","addr": "不限","loc_long":0 ,"loc_lat": 0,"website": "","mp_id": "","extra_info_json": "{\\"key\\":\\"value\\"}","reg_start_time": "2006-01-02 07:04:05","reg_end_time": "2006-01-02 07:04:05","start_time": "2006-01-02 07:04:05", "end_time": "2006-01-02 07:04:05","user_id": "100000"}    ""    0
+
+test_country_is_null
+    [Documentation]    country 为空
+    ${d}    gettime    start
+    post_party    {"cmd": "PartyEdit","party_id": "5","party_name": "上海马拉松editcountry${d}","limitation": 1000,"limitation_type":1,"country": "","province": "","city": "","addr": "不限","loc_long": 13.23231,"loc_lat": 14.12123, "reg_start_time": "2006-01-02 07:04:05","reg_end_time": "2006-01-02 07:04:05","start_time": "2006-01-02 07:04:05", "end_time": "2006-01-02 07:04:05","user_id": "100000"}    ""    0
+
+test_province_is_null
+    [Documentation]    省份为空
+    ${d}    gettime    start
+    post_party    {"cmd": "PartyEdit","party_id": "2","party_name": "上海马拉松2${d}","limitation": 10000,"limitation_type":1,"country": "西班牙","province": "","city": "不限","addr": "不限","loc_long":10.3434,"loc_lat":14.34234 ,"extra_info_json": "{\\"party_blog_id\\": 2,\\"party_type\\":\\"牛人跑\\"}","reg_start_time": "2006-01-02 07:04:05","reg_end_time": "2006-01-02 07:04:05","start_time": "2006-01-02 07:04:05", "end_time": "2026-01-02 07:04:05","user_id": "100000"}    ""    0
+
+test_addr_is_null
+    [Documentation]    addr 为空
+    ${d}    gettime    strart
+    post_party    {"cmd": "PartyEdit","party_id": "5","party_name": "上海马拉松editaddr${d}","limitation": 1000,"limitation_type":1,"country": "不限","province": "","city": "","addr": "","loc_long": 10.23232,"loc_lat": 13.00232,"website": "","mp_id": "","extra_info_json": "{\\"key\\":\\"value\\"}","reg_start_time": "2006-01-02 07:04:05","reg_end_time": "2006-01-02 07:04:05","start_time": "2006-01-02 07:04:05", "end_time": "2006-01-02 07:04:05","user_id": "100000"}    ""    0
+
+test_city_is_null
+    [Documentation]    city 为空
+    ${d}    gettime    start
+    post_party    {"cmd": "PartyEdit","party_id": "2","party_name": "上海马拉松2${d}","limitation": 10000,"limitation_type":1,"country": "西班牙","province": "","city": "","addr": "不限","loc_long":10.3434,"loc_lat":14.34234 ,"extra_info_json": "{\\"party_blog_id\\": 2,\\"party_type\\":\\"牛人跑\\"}","reg_start_time": "2006-01-02 07:04:05","reg_end_time": "2006-01-02 07:04:05","start_time": "2006-01-02 07:04:05", "end_time": "2026-01-02 07:04:05","user_id": "100000"}    ""    0
+
+test_user_id_isnull
+    [Documentation]    user_id 为空
+    ${d}    gettime    start
+    post_party    {"cmd": "PartyEdit","party_id": "5","party_name": "上海马拉松editwpuserid${d}","limitation": 1000,"limitation_type":1,"country": "不限","province": "","city": "","addr": "不限","reg_start_time": "2006-01-02 07:04:05","reg_end_time": "2006-01-02 07:04:05","start_time": "2006-01-02 07:04:05", "end_time": "2006-01-02 07:04:05","user_id": ""}    "赛事创建失败，赛事信息不全\\nwp user id \ is not valid, strconv.ParseInt: parsing \\"\\": invalid syntax"    -8
+
+test_reg_start_time_isnotsend
+    [Documentation]    starttime 字段不传递
+    ${d}    gettime    start
+    post_party    {"cmd": "PartyEdit","party_id": "5","party_name": "上海马拉松editstarttime${d}","limitation": 1000,"limitation_type":1,"country": "不限","province": "","city": "","addr": "不限","loc_long": 10.92932,"loc_lat": 12.3234234,"extra_info_json": "{\\"key\\":\\"value\\"}","reg_end_time": "2006-01-02 07:04:05","start_time": "2006-01-02 07:04:05", "end_time": "2006-01-02 07:04:05","user_id": "100000"}    ""    0
+
+test_party_id_notexsit
+    ${d}    gettime    start
+    post_party    {"cmd": "PartyEdit","party_id": "1001","party_name": "上海马拉松${d}","limitation": 10000,"limitation_type":1,"country": "西班牙","province": "","city": "不限","addr": "不限","reg_start_time": "2006-01-02 07:04:05","reg_end_time": "2006-01-02 07:04:05","start_time": "2006-01-02 07:04:05", "end_time": "2006-01-02 07:04:05","user_id": "100000"}    "无效partyid，赛事不存在\\n1001 is not a valid party id"    -9
+
+test_cmd_is_null
+    [Documentation]    cmd 为空
+    post_party    {"cmd": "","party_id": "1","party_name": "上海马拉松","limitation": 10000,"limitation_type":1,"country": "西班牙","province": "","city": "不限","addr": "不限","reg_start_time": "2006-01-02 07:04:05","reg_end_time": "2006-01-02 07:04:05","start_time": "2006-01-02 07:04:05", "end_time": "2006-01-02 07:04:05","user_id": "100000"}    "没有设置cmd参数"    -1003
+
+test_party_id_is_int_type
+    [Documentation]    cmd 类int 类型
+    post_party    {"cmd": "PartyEdit","party_id": 1,"party_name": "上海马拉松","limitation": 10000,"limitation_type":1,"country": "西班牙","province": "","city": "不限","addr": "不限","reg_start_time": "2006-01-02 07:04:05","reg_end_time": "2006-01-02 07:04:05","start_time": "2006-01-02 07:04:05", "end_time": "2006-01-02 07:04:05","user_id": "100000"}    "无效数据\\nFailed in paring party_id. errror: type assertion to string failed"    -13
+
+test_all_is_null
+    [Documentation]    全部为空
+    post_party    null    "没有设置cmd参数"    -1003
+
+test_user_id_type_int
+    [Documentation]    user_id is int
+    ${d}    gettime    start
+    post_party    {"cmd": "PartyEdit","party_id": "1","party_name": "上海马拉松","limitation": 10000,"limitation_type":1,"country": "西班牙","province": "jiangsu","city": "不限","addr": "不限","reg_start_time": "2006-01-02 07:04:05","reg_end_time": "2006-01-02 07:04:05","start_time": "2006-01-02 07:04:05", "end_time": "2006-01-02 07:04:05","user_id": 100000}    "无效数据\\nFailed in paring user_id. errror: type assertion to string failed"    -13
+
+test_edit_closed_party
+    [Documentation]    edit closed party
+    ${d}    gettime    start
+    post_party    {"cmd": "PartyEdit","party_id": "1","party_name": "上海马拉松2${d}","limitation": 10000,"limitation_type":1,"country": "西班牙","province": "","city": "不限","addr": "不限","loc_long":10.3434,"loc_lat":14.34234 ,"extra_info_json": "{\\"party_blog_id\\": 2,\\"party_type\\":\\"牛人跑\\"}","reg_start_time": "2006-01-02 07:04:05","reg_end_time": "2006-01-02 07:04:05","start_time": "2006-01-02 07:04:05", "end_time": "2026-01-02 07:04:05","user_id": "100000"}    "用户无此权限\\n赛事已经关闭, 不可编辑"    -11
+
+test_extra_info_json_isString
+    [Documentation]    edit closed party
+    ${d}    gettime    start
+    post_party    {"cmd": "PartyEdit","party_id": "4","party_name": "上海马拉松","limitation": 10000,"limitation_type":1,"country": "西班牙","province": "不限","city": "不限","addr": "不限","extra_info_json": "123234asdf","reg_start_time": "2006-01-02 07:04:05","reg_end_time": "2006-01-02 07:04:05","start_time": "2006-01-02 07:04:05", "end_time": "2006-01-02 07:04:05","user_id": "100000"}    "赛事创建失败，赛事信息不全\\nextra_info_json : [123234asdf] 不是有效的字符串"    -8

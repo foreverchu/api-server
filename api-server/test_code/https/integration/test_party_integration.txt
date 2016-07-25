@@ -1,0 +1,26 @@
+*** Settings ***
+Library           Collections
+Library           String
+Library           HttpLibrary.HTTP
+Library           RequestsLibrary
+Library           string
+Resource          ../../业务关键字.txt
+
+*** Test Cases ***
+test_party_create_andQuery
+    [Documentation]    创建赛事>>查询赛事
+    ${d}    gettime    start
+    ${party_id}    post_Createparty    {"cmd": "PartyCreate","party_name": "上海马拉松${d}","limitation": 100000,"limitation_type": 1, "country": "中国","province": "上海","city": "上海","addr": "上海松江", "loc_long": 31.2303950509,"loc_lat": 121.4736999111,"extra_info_json": "{\\"party_blog_id\\": 2,\\"party_type\\":\\"牛人跑\\"}","reg_start_time": "2006-01-19 15:04:05","reg_end_time": "2006-01-19 15:04:05","start_time": "2006-04-02 15:04:05","end_time": "2006-05-02 15:04:05","user_id": "100000"}    ""    0
+    post_Queryparty    {"cmd":"PartyQuery","party_id":${party_id}}    ""    0
+
+test_party_create_andClosed
+    [Documentation]    创建赛事>>关闭赛事
+    ${d}    gettime    start
+    ${party_id}    post_Createparty    {"cmd": "PartyCreate","party_name": "上海马拉松${d}guan","limitation": 100000,"limitation_type": 1, "country": "中国","province": "上海","city": "上海","addr": "上海松江", "loc_long": 31.2303950509,"loc_lat": 121.4736999111,"extra_info_json": "{\\"party_blog_id\\": 2,\\"party_type\\":\\"牛人跑\\"}","reg_start_time": "2006-01-19 15:04:05","reg_end_time": "2015-10-15 15:04:05","start_time": "2015-10-30 15:04:05","end_time": "2016-05-02 15:04:05","user_id": "100000"}    ""    0
+    post_party    {"cmd": "PartyClose","party_id":${party_id}}    ""    0
+
+test_party_create_andEdit
+    [Documentation]    创建赛事>>编辑赛事
+    ${d}    gettime    start
+    ${party_id}    post_Createparty    {"cmd": "PartyCreate","party_name": "上海马拉松${d}bian","limitation": 100000,"limitation_type": 1, "country": "中国","province": "上海","city": "上海","addr": "上海松江", "loc_long": 31.2303950509,"loc_lat": 121.4736999111,"extra_info_json": "{\\"party_blog_id\\": 2,\\"party_type\\":\\"牛人跑\\"}","reg_start_time": "2006-01-19 15:04:05","reg_end_time": "2015-10-15 15:04:05","start_time": "2015-10-30 15:04:05","end_time": "2016-05-02 15:04:05","user_id": "100000"}    ""    0
+    post_party    {"cmd": "PartyEdit","party_id":${party_id},"party_name": "上海马拉松2${d}","limitation": 100,"limitation_type":1,"country": "西班牙","province": "","city": "不限","addr": "不限","loc_long":10.3434,"loc_lat":14.34234 ,"extra_info_json": "{\\"party_blog_id\\": 2,\\"party_type\\":\\"牛人跑\\"}","reg_start_time": "2006-01-02 07:04:05","reg_end_time": "2006-01-02 07:04:05","start_time": "2006-01-02 07:04:05", "end_time": "2026-01-02 07:04:05","user_id": "100000"}    ""    0

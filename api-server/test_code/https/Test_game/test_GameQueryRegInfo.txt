@@ -1,0 +1,44 @@
+*** Settings ***
+Library           Collections
+Library           String
+Library           HttpLibrary.HTTP
+Library           RequestsLibrary
+Library           string
+Resource          ../../业务关键字.txt
+
+*** Test Cases ***
+test_gameQueryReginfo
+    [Documentation]    正常查询
+    ${item}    post_GameQueryRegInfo    {"cmd": "GameQueryRegInfo", "game_id": "8"}    ""    0
+    ${apply}    set variable    ${item[0]}
+    ${payed}    set variable    ${item[0]}
+    log    ${apply}
+    log    ${payed}
+
+test_gameQueryReginfo_isnotexsit
+    [Documentation]    gameid不存在，查询失败
+    post_GameQueryRegInfo    {"cmd": "GameQueryRegInfo", "game_id": "10000"}    "无效gameid，赛事不存在\\n无效的game_id\\n10000 is not a valid game id"    -9
+
+test_gameQueryReginfo_partyid_closed
+    [Documentation]    gameid关闭，查询成功
+    post_GameQueryRegInfo    {"cmd": "GameQueryRegInfo", "game_id": "8"}    ""    0
+
+test_cmd_null
+    [Documentation]    cmd 为空值
+    post_GameQueryRegInfo    {"cmd": "", "game_id": "8"}    "没有设置cmd参数"    -1003
+
+test_cmd_type_int
+    [Documentation]    cmd 类型为 int
+    post_GameQueryRegInfo    {"cmd":1, "game_id": "8"}    "cmd类型不正确"    -1003
+
+test_cmd_is_notsend
+    [Documentation]    cmd 不传递
+    post_GameQueryRegInfo    {"game_id": "8"}    "没有设置cmd参数"    -1003
+
+test_gameQueryReginfo_gameid_notsend
+    [Documentation]    gameid不传递
+    post_GameQueryRegInfo    {"cmd": "GameQueryRegInfo"}    "无效数据\\n需要game_id参数"    -13
+
+test_gameQueryReginfo_gameid_int
+    [Documentation]    gameid 类型
+    post_GameQueryRegInfo    {"cmd": "GameQueryRegInfo", "game_id": 8}    "无效gameid，赛事不存在\\n不合法的party_id\\ntype assertion to string failed"    -9

@@ -1,0 +1,276 @@
+*** Settings ***
+Library           Collections
+Library           String
+Library           HttpLibrary.HTTP
+Library           RequestsLibrary
+Library           string
+Resource          ../../业务关键字.txt
+
+*** Test Cases ***
+test_regetqueuetoken
+    [Documentation]    正常请求，报名名额未满、赛事未结束等一切条件均满足
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_endgame_regQueueToken
+    [Documentation]    比赛已经结束，无法进行报名
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_full_regetqueuetoken
+    [Documentation]    报名名额已满，无法进行报名
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_notexsitgame_regetqueuetoken
+    [Documentation]    比赛gameid不存在，无法进行报名
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_nouser_reg
+    [Documentation]    用户userid不存在，报名失败
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_gender_isnotreq
+    [Documentation]    性别要求女，无法报名成功，性别为男
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_gender_isgirl
+    [Documentation]    性别为女， 要求报名性别为男，无法报名成功
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_age_isnotreq
+    [Documentation]    年龄小于最小年龄，无法报名成功
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_age__isnotreq2
+    [Documentation]    年龄大于最大年龄限制，无法报名成功
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_closedgame_regQueuentoken
+    [Documentation]    比赛已经关闭的，无法报名成功
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_iccid_info_01
+    [Documentation]    身份证信息与性别不符
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_iccid_info_02
+    [Documentation]    身份证信息与出生年月不符
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_iccid_info_03
+    [Documentation]    身份证信息与省份不符
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_cmd_null
+    [Documentation]    cmd 不传递
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_cmd_int
+    [Documentation]    cmd 传递类型不符，为int类型
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_cmd_error
+    [Documentation]    cmd值 传递错误
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_gameid_null
+    [Documentation]    gameid 不传递
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_gameid_int
+    [Documentation]    gameid 为int
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_userid_null
+    [Documentation]    userid 为null
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_userid_int
+    [Documentation]    userid 为int
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_name_null
+    [Documentation]    name 不传递
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_name_empty
+    [Documentation]    name 为空值，“”
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_name_isjson
+    [Documentation]    name 为json字符串
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_certificate_type_isiccid
+    [Documentation]    certificate_type 身份证 0
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_certificate_type_ispassport
+    [Documentation]    certificate_type 护照 1
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_certificate_type_isMilitary officer
+    [Documentation]    certificate_type 军官证 2
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_certificate_type_isMTPS
+    [Documentation]    certificate_type 台胞证 3
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_certificate_type_isPermit
+    [Documentation]    certificate_type 港澳通行证 4
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_certificate_type_isHVPs
+    [Documentation]    certificate_type 回乡证 5
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_certificate_type_isovertime
+    [Documentation]    certificate_type 超出类别， 为6
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_certificate_type_isString
+    [Documentation]    certificate_type String 类型
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_certificate_type_Negative
+    [Documentation]    certificate_type 为负数
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_certificate_no_isInvalid
+    [Documentation]    无效的报名tokenid
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_certificate_no_isExpired
+    [Documentation]    过期的报名tokenid
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_certificate_no_isError
+    [Documentation]    错误报名的tokenid（使用其他人使用过的tokenid）
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_mobile_null
+    [Documentation]    moblie不传递
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_mobile_int
+    [Documentation]    moblie 为int
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_email_null
+    [Documentation]    email 不传递
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_email_int
+    [Documentation]    email为int
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_email_json
+    [Documentation]    email为JSON格式
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_country_null
+    [Documentation]    contry不传递
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_country_int
+    [Documentation]    contry为int
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_province_null
+    [Documentation]    province不传递
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_province_json
+    [Documentation]    province为json
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_city_null
+    [Documentation]    city不传递
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_city_json
+    [Documentation]    city为json
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_address1_null
+    [Documentation]    address1 不传递
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_address1_empty
+    [Documentation]    address1 值为empty
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_address2_null
+    [Documentation]    address1 不传递
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_address2_empty
+    [Documentation]    address1 值为empty
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_zip_null
+    [Documentation]    zip邮编不传递
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_zip_json
+    [Documentation]    zip邮编 类型为json
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_gender_string_01
+    [Documentation]    性别man
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_gender_String_02
+    [Documentation]    性别felname
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_gender_empty
+    [Documentation]    gender 值为空
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_gender_null
+    [Documentation]    gender 不传递
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_gender_json
+    [Documentation]    gender 类型为json
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_birth_date
+    [Documentation]    birth_date 不传递
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_emergency_contact_name_null
+    [Documentation]    emergency_contact_name 不传递
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_emergency_contact_name_empty
+    [Documentation]    emergency_contact_name 空 ""
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_emergency_contact_moblie_null
+    [Documentation]    emergency_contact_moblie不传递
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_emergency_contact_moblie_int
+    [Documentation]    emergency_contact_moblie 为int
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_t_shirt_size_null
+    [Documentation]    test_t_shirt_size 不传递
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_t_shirt_size_json
+    [Documentation]    test_t_shirt_size 为json类型
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_extra_info_json_null
+    [Documentation]    test_t_shirt_size 不传递
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_extra_info_json_isjson
+    [Documentation]    test_t_shirt_json 为json类型
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+
+test_extra_info_json_empty
+    [Documentation]    test_t_shirt_json 为empty
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0

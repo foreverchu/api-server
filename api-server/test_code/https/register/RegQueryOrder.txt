@@ -1,0 +1,48 @@
+*** Settings ***
+Library           Collections
+Library           String
+Library           HttpLibrary.HTTP
+Library           RequestsLibrary
+Library           string
+Resource          ../../业务关键字.txt
+
+*** Test Cases ***
+test_regQueryorder
+    [Documentation]    查询订单下所有报名,已经成功支付的订单
+    post_RegQueryOrder    {"cmd":"RegQueryOrder","order_no": "xxx"}    ""    0
+
+test_regQueryorder_orderno_isnotexsit
+    [Documentation]    订单不存在
+    post_RegQueryOrder    {"cmd":"RegQueryOrder","order_no": "xxx"}    "无效order_no"    －17
+
+test_regQueryorder_nopay_orderno
+    [Documentation]    订单未支付
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+    ${token}    post_RegQueryQueueTokenState    {"cmd": "RegQueryQueueTokenState","token": "$token"}    ""    0
+    post_RegQueryOrder    {"cmd":"RegQueryOrder","order_no": "${order_no}"}    ""    0
+
+test_regQueryorder_singal_orderno
+    [Documentation]    此订单报名只有一个人
+    ${token}    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+    ${order_no}    post_RegQueryQueueTokenState    {"cmd": "RegQueryQueueTokenState","token": "${token}"}    ""    0
+    post_RegQueryOrder    {"cmd":"RegQueryOrder","order_no": "${order_no}"}    ""    0
+
+test_regQueryorder_many_orderno
+    [Documentation]    此订单报名有多人
+    post_RegQueryOrder    {"cmd":"RegQueryOrder","order_no": "xxx"}    ""    0
+
+test_regQueryorderccc_cmd_typeint
+    [Documentation]    cmd 为int
+    post_RegQueryOrder    {"cmd":1,"order_no": "xxx"}    ""    0
+
+test_regQueryorder_cmd_notsend
+    [Documentation]    cmd不传递
+    post_RegQueryOrder    {"order_no": "xxx"}    "缺少cmd"    -1003
+
+test_regQueryorder_orderno_null
+    [Documentation]    订单为空值
+    post_RegQueryOrder    {"cmd":"RegQueryOrder","order_no": ""}    ""    0
+
+test_regQueryorder_orderno_isnotsend
+    [Documentation]    orderno 不传递
+    post_RegQueryOrder    {"cmd":"RegQueryOrder"}    "缺少订单"    －1002

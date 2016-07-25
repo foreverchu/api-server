@@ -1,0 +1,35 @@
+*** Settings ***
+Library           Collections
+Library           String
+Library           HttpLibrary.HTTP
+Library           RequestsLibrary
+Library           string
+Resource          ../../业务关键字.txt
+
+*** Test Cases ***
+test_queryparty
+    [Documentation]    赛事查询，正常请求
+    ${d}    gettime    start
+    ${party_id}    post_Createparty    {"cmd": "PartyCreate","party_name": "上海马拉松${d}","limitation": 100000,"limitation_type": 1, "country": "中国","province": "上海","city": "上海","addr": "上海松江", "loc_long": 31.2303950509,"loc_lat": 121.4736999111,"extra_info_json": "{\\"party_blog_id\\": 2,\\"party_type\\":\\"牛人跑\\"}","reg_start_time": "2006-01-19 15:04:05","reg_end_time": "2006-01-19 15:04:05","start_time": "2006-04-02 15:04:05","end_time": "2006-05-02 15:04:05","user_id": "100000"}    ""    0
+    ${return_id}    post_Queryparty    {"cmd":"PartyQuery","party_id":${party_id}}    ""    0
+    should be equal    "${return_id}"    ${party_id}
+
+test_party_id_isnotexsit
+    [Documentation]    查询的赛事id不存在
+    post_Queryparty    {"cmd":"PartyQuery","party_id":"10001"}    "无效partyid，赛事不存在\\n无效的party_id\\n10001 is not a valid party id"    -9
+
+test_cmd_typeerror_int
+    [Documentation]    cmd传递类型不正确
+    post_Queryparty    {"cmd":1,"party_id":"3"}    "传递cmd类型不正确"    -1004
+
+test_cmd_isnull
+    [Documentation]    cmd 字段不传递
+    post_Queryparty    {"party_id":"3"}    "没有设置cmd参数"    -1003
+
+test_partyid_isint
+    [Documentation]    party_id类型不正确为int
+    post_Queryparty    {"cmd":"PartyQuery","party_id":3}    "无效数据\\n不合法的party_id\\ntype assertion to string failed"    -13
+
+test_partyid_isnull
+    [Documentation]    partyid 字段不传递
+    post_Queryparty    {"cmd":"PartyQuery"}    "无效数据\\n不合法的party_id\\ntype assertion to string failed"    -13

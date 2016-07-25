@@ -1,0 +1,84 @@
+*** Settings ***
+Library           Collections
+Library           String
+Library           HttpLibrary.HTTP
+Library           RequestsLibrary
+Library           string
+Resource          ../../业务关键字.txt
+
+*** Test Cases ***
+test_usersigin_user
+    [Documentation]    正常登录
+    post_UserSignin    {"cmd":"UserSignin","signin_by":"471618565@qq.com","password":"zbzzbd"}    ""    0
+
+test_usersigin_mobile
+    [Documentation]    手机正常登录
+    post_UserSignin    {"cmd":"UserSignin","signin_by":"13611873856","password":"zbzzbd"}    ""    0
+
+test_usersigin_email_notactive
+    [Documentation]    未激活邮箱注册，登录失败
+    post_user    {"cmd": "UserRegister","come_from":"email","email":"1262424842@qq.com","password":"zbzzbd","password_confirm": "zbzzbd"}    ""    0
+    post_UserSignin    {"cmd":"UserSignin","signin_by":"1262424842@qq.com","password":"zbzzbd"}    "无效数据\\n用户还未激活"    -13
+
+test_user_isnotexsit
+    [Documentation]    用户名不存在，登录失败
+    post_UserSignin    {"cmd":"UserSignin","signin_by":"13618739640","password":"111111"}    "无效数据\\n用户不存在"    -13
+
+test_user_pwd_iserror
+    [Documentation]    用户名存在，密码错误，登录失败
+    post_UserSignin    {"cmd":"UserSignin","signin_by":"1262424842@qq.com","password":"121212"}    "无效数据\\n账号登录失败"    -13
+
+test_user_all_iserror
+    [Documentation]    用户名错误，密码错误，登录失败
+    post_UserSignin    {"cmd":"UserSignin","signin_by":"13618739640","password":"121212"}    "无效数据\\n用户不存在"    -13
+
+test_user_auto_login
+    [Documentation]    自动登录
+    ${token}    post_UserSignin    {"cmd":"UserSignin","signin_by":"13611873856","password":"zbzzbd","auto_signin":true}    ""    0
+    log    ${token}
+    ${token_database}    database    select token from user where phone=13611873856
+    should be equal    ${token}    "${token_database[0][0]}"
+
+test_cmd_type_int
+    [Documentation]    cmd 类型不正确，为int
+    post_UserSignin    {"cmd":1,"signin_by":"13611873856","password":"zbzzbd","auto_signin":true}    "cmd类型不正确"    -1003
+
+test_cmd_isnull
+    [Documentation]    cmd null
+    post_UserSignin    {"cmd":"","signin_by":"zbz","password":"121212","auto_signin":true}    "没有设置cmd参数"    -1003
+
+test_cmd_isnotsend
+    [Documentation]    cmd 不传递
+    post_UserSignin    {"signin_by":"zbz","password":"121212","auto_signin":true}    "没有设置cmd参数"    -1003
+
+test_signin_by_type_int
+    [Documentation]    signin 类型为int
+    post_UserSignin    {"cmd":"UserSignin","signin_by":13611873856,"password":"121212","auto_signin":true}    "无效数据\\n不合法的登录"    -13
+
+test_sigin_by_isnull
+    [Documentation]    signin null
+    post_UserSignin    {"cmd":"UserSignin","signin_by":"","password":"121212","auto_signin":true}    "无效数据\\n不合法的登录"    -13
+
+test_sigin_by_isnotsend
+    [Documentation]    signin_by用户名字段不传递
+    post_UserSignin    {"cmd":"UserSignin","password":"121212","auto_signin":true}    "无效数据\\n不合法的登录"    -13
+
+test_pwd_type_int
+    [Documentation]    pwd 类型为int
+    post_UserSignin    {"cmd":"UserSignin","signin_by":"zbzzbd","password":121212,"auto_signin":true}    "无效数据\\n不合法的登录"    -13
+
+test_pwd_isnull
+    [Documentation]    pwd null
+    post_UserSignin    {"cmd":"UserSignin","signin_by":"zbzzbd","password":"","auto_signin":true}    "无效数据\\n不合法的登录"    -13
+
+test_pwd_isnotsend
+    [Documentation]    pwd 用户名字段不传递
+    post_UserSignin    {"cmd":"UserSignin","signin_by":"zbzzbd","auto_signin":true}    "无效数据\\n不合法的登录"    -13
+
+test_auto_signin_int
+    [Documentation]    auto_signin 类型为int,值为0
+    post_UserSignin    {"cmd":"UserSignin","signin_by":"zbzzbd","password":121212,"auto_signin":0}    "无效数据\\n不合法的登录"    -13
+
+test_auto_signin_isnull
+    [Documentation]    auto_signin 为null
+    post_UserSignin    {"cmd":"UserSignin","signin_by":"zbzzbd","password":"111111","auto_signin":true}    "无效数据\\n不合法的登录"    -13

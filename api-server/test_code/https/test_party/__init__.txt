@@ -1,0 +1,5 @@
+*** Settings ***
+Library           Collections
+Library           String
+Library           RequestsLibrary
+Library           HttpLibrary.HTTP

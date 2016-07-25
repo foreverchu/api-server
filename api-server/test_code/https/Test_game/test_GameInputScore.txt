@@ -1,0 +1,68 @@
+*** Settings ***
+Library           Collections
+Library           String
+Library           HttpLibrary.HTTP
+Library           RequestsLibrary
+Library           string
+Resource          ../../业务关键字.txt
+
+*** Test Cases ***
+test_gameinputScore
+    [Documentation]    正常输入比赛成绩，gameid,playerid 值均正常
+    post_GameInputScore    {"cmd":"GameInputScore","game_id": "1","player_id":"10000","result": 8000}    ""    0
+
+test_gameid_isnotexsit
+    [Documentation]    gameid 不存在
+    post_GameInputScore    {"cmd":"GameInputScore","game_id": "10000000","player_id":"10000","result": 8000}    "无效game id,比赛不存在"    -10
+
+test_gameid_not_match_palyerid
+    [Documentation]    gameid 下无此playerid
+    post_GameInputScore    {"cmd":"GameInputScore","game_id": "1","player_id":"10000000","result": 8000}    "无用户"    -10
+
+test_gameid_not_start
+    [Documentation]    gameid 比赛未开始无法输入成绩
+    post_GameInputScore    {"cmd":"GameInputScore","game_id": "2","player_id":"10000000","result": 8000}    "无用户"    -10
+
+test_gameid_closed
+    [Documentation]    gameid 比赛已经关闭无法输入成绩
+    post_GameInputScore    {"cmd":"GameInputScore","game_id": "2","player_id":"10000000","result": 8000}    "无效数据\\n比赛已经关闭"    -13
+
+test_gameinputScore_chongfu
+    [Documentation]    重复提交比赛比赛成绩
+    post_GameInputScore    {"cmd":"GameInputScore","game_id": "1","player_id":"10000","result": 8000}    ""    0
+
+test_cmd_null
+    [Documentation]    cmd 为空值
+    post_GameInputScore    {"cmd": "","game_id": "1","player_id":"10000","result": 8000}    "没有设置cmd参数"    -1003
+
+test_cmd_type_int
+    [Documentation]    cmd 类型为 int
+    post_GameInputScore    {"cmd":1, "game_id": "1","player_id":"10000","result": 8000}    "cmd类型不正确"    -1003
+
+test_cmd_is_notsend
+    [Documentation]    cmd 不传递
+    post_GameInputScore    {"game_id": "1","player_id":"10000","result": 8000}    "没有设置cmd参数"    -1003
+
+test_gameid_notsend
+    [Documentation]    gameid不传递
+    post_GameInputScore    {"cmd":"GameInputScore","player_id":"10000000","result": 8000}    "无效数据\\n需要game_id参数"    -13
+
+test__gameid_int
+    [Documentation]    gameid 类型为int
+    post_GameInputScore    ｛"cmd":"GameInputScore","game_id":1,"player_id":"10000000","result": 8000｝    "无效gameid，赛事不存在\\n不合法的party_id\\ntype assertion to string failed"    -9
+
+test_playerid_notsend
+    [Documentation]    playerid 不传递
+    post_GameInputScore    {"cmd":"GameInputScore","game_id": "1","result": 8000}    "无效player_id"    -23
+
+test_playerid_null
+    [Documentation]    playerid 为空
+    post_GameInputScore    {"cmd":"GameInputScore","game_id": "8","player_id":"","result": 8000}    "无效player_id"    -23
+
+test_result_type_string
+    [Documentation]    成绩字段类型不正确，为string类型
+    post_GameInputScore    {"cmd":"GameInputScore","game_id": "2","player_id":"10000000","result": "8000"}    "无效数据\\n比赛成绩出错"    -13
+
+test_result_notsend
+    [Documentation]    成绩字典不传递
+    post_GameInputScore    {"cmd":"GameInputScore","game_id": "2","player_id":"10000000"}    "缺少player字段"    -13

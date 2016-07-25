@@ -1,0 +1,53 @@
+*** Settings ***
+Library           Collections
+Library           String
+Library           HttpLibrary.HTTP
+Library           RequestsLibrary
+Library           string
+Resource          ../../业务关键字.txt
+
+*** Test Cases ***
+test_getweChatUrl
+    [Documentation]    根据订单号正常获取url
+    ${token}    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+    ${order_no}    post_RegQueryQueueTokenState    {"cmd": "RegQueryQueueTokenState","token": "$token"}    ""    0
+    ${pay_url}    post_getWechatPayUrl    { "cmd": "GetWechatPayUrl", "order_no": "${order_no}"}    ""    0
+    log    ${pay_url}
+
+test_url_orderno_isnot_exist
+    [Documentation]    根据订单号不存在
+    ${order_no}    set variable    asdgasdfasdfasdf
+    post_getWechatPayUrl    { "cmd": "GetWechatPayUrl","order_no": "${order_no}"}    "服务器内部错误\\n找不到订单 asdgasdfasdfasdf"    -1000
+
+test_url_orderno_ordered
+    [Documentation]    已经支付成功的账单无法再生成新的订单
+    ${order_no}    set variable    haveordered
+    post_getWechatPayUrl    { "cmd": "GetWechatPayUrl","order_no": "${order_no}"}    "已经支付成功的账单无法再生成新的订单"    -1000
+
+test_url_orderno_overtime
+    [Documentation]    超时的订单号，无法再次生成支付url
+    ${order_no}    set variable    haveovertime
+    post_getWechatPayUrl    { "cmd": "GetWechatPayUrl","order_no": "${order_no}"}    "超时无法生成新的订单"    -1000
+
+test_url_orderno_tuikuan
+    [Documentation]    退款的订单无法生成订单
+    ${order_no}    set variable    tuikuanorder
+    post_getWechatPayUrl    { "cmd": "GetWechatPayUrl","order_no": "${order_no}"}    "退款的订单无法生成订单"    -1000
+
+test_url_cmd_null
+    [Documentation]    cmd 为空
+    ${order_no}    set variable    tuikuanorder
+    post_getWechatPayUrl    { "cmd": "","order_no": "${order_no}"}    "cmd 值不正确"    -1000
+
+test_url_cmd_not_send
+    [Documentation]    cmd 为空
+    ${order_no}    set variable    tuikuanorder
+    post_getWechatPayUrl    {"order_no": "${order_no}"}    "缺少cmd"    -1000
+
+test_url_orderno_null
+    [Documentation]    url_orderno 为空值
+    post_getWechatPayUrl    { "cmd": "GetWechatPayUrl","order_no": ""}    "订单不能为空"    -1003
+
+test_url_orderno_is_notsend
+    [Documentation]    url_orderno 为空值
+    post_getWechatPayUrl    { "cmd": "GetWechatPayUrl"}    "订单不能为空"    -1003

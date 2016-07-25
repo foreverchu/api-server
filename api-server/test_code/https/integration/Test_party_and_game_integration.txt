@@ -1,0 +1,39 @@
+*** Settings ***
+Library           Collections
+Library           String
+Library           HttpLibrary.HTTP
+Library           RequestsLibrary
+Library           string
+Resource          ../../业务关键字.txt
+
+*** Test Cases ***
+test_createparty_and_game
+    [Documentation]    创建party>创建game>查询game
+    ${d}    gettime    start
+    ${party_id}    post_Createparty    {"cmd": "PartyCreate","party_name": "上海马拉松${d}","limitation": 100000,"limitation_type": 1, "country": "中国","province": "上海","city": "上海","addr": "上海松江", "loc_long": 31.2303950509,"loc_lat": 121.4736999111,"extra_info_json": "{\\"party_blog_id\\": 2,\\"party_type\\":\\"牛人跑\\"}","reg_start_time": "2006-01-19 15:04:05","reg_end_time": "2006-01-19 15:04:05","start_time": "2006-04-02 15:04:05","end_time": "2006-05-02 15:04:05","user_id": "100000"}    ""    0
+    ${game_id}    post_Creategame    {"cmd": "GameCreate", "party_id": ${party_id},"name": "跑跑更健康${d}","limitation":3000,"start_time": "2016-01-01 23:04:05", "end_time": "2016-01-15 23:04:05","rmb_price":100.00,"usd_price": 80.00, "gender_req": 0, "min_age_req": 20,"max_age_req": 50,"user_id": "100000"}    ""    0
+    post_game    {"cmd": "GameQuery","game_id": ${game_id}}    ""    0
+
+test_createparty_and_game02
+    [Documentation]    创建party>创建game>编辑game比赛
+    ${d}    gettime    start
+    ${party_id}    post_Createparty    {"cmd": "PartyCreate","party_name": "上海马拉松${d}intergame","limitation": 100000,"limitation_type": 1, "country": "中国","province": "上海","city": "上海","addr": "上海松江", "loc_long": 31.2303950509,"loc_lat": 121.4736999111,"extra_info_json": "{\\"party_blog_id\\": 2,\\"party_type\\":\\"牛人跑\\"}","reg_start_time": "2006-01-19 15:04:05","reg_end_time": "2006-01-19 15:04:05","start_time": "2006-04-02 15:04:05","end_time": "2006-05-02 15:04:05","user_id": "100000"}    ""    0
+    ${game_id}    post_Creategame    {"cmd": "GameCreate", "party_id": ${party_id},"name": "跑跑更健康${d}","limitation":3000,"start_time": "2016-01-01 23:04:05", "end_time": "2016-01-15 23:04:05","rmb_price":100.00,"usd_price": 80.00, "gender_req": 0, "min_age_req": 20,"max_age_req": 50,"user_id": "100000"}    ""    0
+    post_game    {"cmd": "GameEdit","game_id":${game_id},"name": "一起跑起来${d}","limitation": 2000,"start_time": "2006-02-01 23:04:05","end_time": "2036-03-01 23:04:05","rmb_price": 300,"usd_price": 800,"gender_req": 0,"min_age_req": 18,"max_age_req": 50,"user_id": "100000"}    ""    0
+
+test_createparty_and_game03
+    [Documentation]    创建party>创建game>关闭比赛
+    ${d}    gettime    start
+    ${party_id}    post_Createparty    {"cmd": "PartyCreate","party_name": "上海马拉松${d}intergameclose","limitation": 100000,"limitation_type": 1, "country": "中国","province": "上海","city": "上海","addr": "上海松江", "loc_long": 31.2303950509,"loc_lat": 121.4736999111,"extra_info_json": "{\\"party_blog_id\\": 2,\\"party_type\\":\\"牛人跑\\"}","reg_start_time": "2006-01-19 15:04:05","reg_end_time": "2006-01-19 15:04:05","start_time": "2006-04-02 15:04:05","end_time": "2006-05-02 15:04:05","user_id": "100000"}    ""    0
+    ${game_id}    post_Creategame    {"cmd": "GameCreate", "party_id": ${party_id},"name": "跑跑更健康${d}","limitation":3000,"start_time": "2016-01-01 23:04:05", "end_time": "2016-01-15 23:04:05","rmb_price":100.00,"usd_price": 80.00, "gender_req": 0, "min_age_req": 20,"max_age_req": 50,"user_id": "100000"}    ""    0
+    post_game    {"cmd": "GameClose","game_id":${game_id},"user_id": "100000"}    ""    0
+
+test_createparty_and_game04
+    [Documentation]    创建party>创建game>查询赛事中所有的比赛
+    ${d}    gettime    start
+    ${party_id}    post_Createparty    {"cmd": "PartyCreate","party_name": "上海马拉松${d}intergameclose","limitation": 100000,"limitation_type": 1, "country": "中国","province": "上海","city": "上海","addr": "上海松江", "loc_long": 31.2303950509,"loc_lat": 121.4736999111,"extra_info_json": "{\\"party_blog_id\\": 2,\\"party_type\\":\\"牛人跑\\"}","reg_start_time": "2006-01-19 15:04:05","reg_end_time": "2006-01-19 15:04:05","start_time": "2006-04-02 15:04:05","end_time": "2006-05-02 15:04:05","user_id": "100000"}    ""    0
+    ${game_id}    post_Creategame    {"cmd": "GameCreate", "party_id": ${party_id},"name": "跑跑更健康${d}","limitation":3000,"start_time": "2016-01-01 23:04:05", "end_time": "2016-01-15 23:04:05","rmb_price":100.00,"usd_price": 80.00, "gender_req": 0, "min_age_req": 20,"max_age_req": 50,"user_id": "100000"}    ""    0
+    ${game}    post_QuerypartyGame    {"cmd":"PartyQueryGames","party_id":${party_id}}    ""    0
+    ${retrun_game}    evaluate    ${game}
+    ${retrun_game_id}    get from dictionary    ${retrun_game[0]}    game_id
+    should be equal    "${retrun_game_id}"    ${game_id}

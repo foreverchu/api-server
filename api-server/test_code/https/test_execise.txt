@@ -1,0 +1,45 @@
+*** Settings ***
+Resource          ../业务关键字.txt
+Library           DatabaseLibrary
+Library           Collections
+
+*** Test Cases ***
+case2
+    随机1    10    20
+
+case1
+    ${limi}    tiaojian    0    3
+    log    ${limi}
+    log    $c
+
+case3
+    ${refister_json}    set variable    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}
+    ${num}    set variable    10
+    log    ${refister_json}
+    ${cmd}    get json value    ${refister_json}    /cmd
+    ${name}    run keyword if    ${num}==10    get json value    ${refister_json}    /players
+    log    name为：${name}
+    ${length}    run keyword if    ${num}==10    get length    ${name}
+    run keyword if    ${length}<=40    should be equal    "选手返回不正确"    ""
+    run keyword if    ${name}!=None    log    name 正确返回
+    log    长度为${length}
+    should be string    ${num}
+
+case4
+    Connect To Database Using Custom Params    pymysql    host="localhost", port=3306,user="root",passwd="root", db="chinarun",unix_socket="/tmp/mysql.sock",charset ="utf8"
+    ${a}    query    select user_id from party where id=1
+    Disconnect From Database
+    log    ${a[0][0]}
+
+case
+    ${a}    set variable    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [{ "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "苏州", "address1": "江苏苏州", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}
+    log    ${a}
+    ${player}    get json value    ${a}    /players
+    ${item}    evaluate    ${player}
+    log    ${item[0]}
+    ${b}    get from dictionary    ${item[0]}    name
+    log    b:${b}
+
+case 5
+    ${user_id}    database    select user_id from party where id=1
+    log    ${user_id[0][0]}

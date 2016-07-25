@@ -1,0 +1,4 @@
+source 'https://ruby.taobao.org/'
+
+# 用于动态读取与设置配置文件
+gem 'inifile'

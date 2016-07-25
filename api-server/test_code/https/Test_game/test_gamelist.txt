@@ -1,0 +1,28 @@
+*** Settings ***
+Library           Collections
+Library           String
+Library           HttpLibrary.HTTP
+Library           RequestsLibrary
+Library           string
+Resource          ../../业务关键字.txt
+
+*** Test Cases ***
+test_Gamelist
+    [Documentation]    正常查询
+    post_game    {"cmd": "GameList","party_id": "1"}    ""    0
+
+test_queryGame_isnotexsit
+    [Documentation]    gameID 不存在
+    post_game    {"cmd": "GameQuery","game_id": "100000000"}    "无效数据\\n<QuerySeter> no row found"    -13
+
+test_gameid_type_int
+    [Documentation]    gameID 不存在
+    post_game    {"cmd": "GameQuery","game_id": 1}    "数据类型不正确"    -13
+
+test_gameid_is_null
+    [Documentation]    gameID 为空
+    post_game    {"cmd": "GameQuery","game_id": ""}    "无效数据\\nstrconv.ParseInt: parsing \\"\\": invalid syntax"    -13
+
+test_gameid_idnotsend
+    [Documentation]    gameID \ 字段不传递
+    post_game    {"cmd": "GameQuery"}    "gameid字段缺少"    -13

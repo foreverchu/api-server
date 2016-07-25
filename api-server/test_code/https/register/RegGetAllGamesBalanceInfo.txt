@@ -1,0 +1,20 @@
+*** Settings ***
+Library           Collections
+Library           String
+Library           HttpLibrary.HTTP
+Library           RequestsLibrary
+Library           string
+Resource          ../../业务关键字.txt
+
+*** Test Cases ***
+test_getAllGamesBalanceinfo
+    [Documentation]    获取所有正在报名比赛余下的名额
+    ${limi}    set variable    30
+    post_regSetAllGameLimitaion    {"cmd": "RegSetAllGamesLimitation", "balances": [{"game_id":"1","limitation":${limi},"balance": 10}]}    ""    0
+    ${balances}    post_RegGetAllGamesBalanceInfo    {"cmd":"RegGetAllGamesBalanceInfo"}    ""    0
+    log    ${balances}
+
+test_getAllGamesBalanceinfo_cmd_null
+    [Documentation]    cmd 参数为空
+    ${balances}    post_RegGetAllGamesBalanceInfo    {"cmd":""}    "没有设置cmd参数"    -1003
+    log    ${balances}

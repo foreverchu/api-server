@@ -1,0 +1,96 @@
+*** Settings ***
+Library           Collections
+Library           String
+Library           HttpLibrary.HTTP
+Library           RequestsLibrary
+Library           string
+Resource          ../../业务关键字.txt
+
+*** Test Cases ***
+test_setGameLimitation
+    [Documentation]    设置名额限制,gameid存在，设置名额成功
+    ${limi}    set variable    30
+    post_regSetGameLimitaion    {"cmd": "RegSetGameLimitation","game_id": "4", "limitation": "${limi}","balance": "20"}    ""    0
+    ${limitation}    post_RegGetGameLimitationInfo    {"cmd": "RegGetGameLimitationInfo","game_id": "4"}    ""    0
+    should be equal    ${limitation}    ${limi}
+
+test_gameid_notexsit
+    [Documentation]    设置名额限制,gameid不存在，无法设置名额
+    post_regSetGameLimitaion    {"cmd": "RegSetGameLimitation","game_id": "1000000", "limitation": 300,"balance": 20}    "无效比赛id，比赛不存在"    -10
+
+test_game_endtime
+    [Documentation]    比赛已经结束(endtime)，无法设置名额
+    post_regSetGameLimitaion    {"cmd": "RegSetGameLimitation","game_id": "1", "limitation": 3000,"balance": 20}    "比赛已经结束，无法设置名额"    -1003
+
+test_game_closed
+    [Documentation]    比赛已经关闭，无法设置名额
+    post_regSetGameLimitaion    {"cmd": "RegSetGameLimitation","game_id": "2", "limitation": 3000,"balance": 20}    "比赛已经关闭，无法设置名额"    -1003
+
+test_gameid_no_Places
+    [Documentation]    赛事无名额，无法进行设置名额
+    post_regSetGameLimitaion    {"cmd": "RegSetGameLimitation","game_id": "3", "limitation": 3000,"balance": 20}    "赛事无名额，无法进行设置名额"    0
+
+test_balance_lagrethan_limitation
+    [Documentation]    剩余名额> 限制名额,即：balance>limitation无法成功设置名额
+    post_regSetGameLimitaion    {"cmd": "RegSetGameLimitation","game_id": "8", "limitation": 3000,"balance": 4000}    "balance>limitation无法成功设置名额"    -1003
+
+test_balance_limitationlagreDatabases
+    [Documentation]    设置名额>大于数据库中总共的名额， 无法设置成功
+    post_regSetGameLimitaion    {"cmd": "RegSetGameLimitation","game_id": "8", "limitation": 40000,"balance": 20}    "设置名额>大于数据库中总共的名额， 无法设置成功"    －1003
+
+test_cmd_typeint
+    [Documentation]    cmd类型不正确，为int
+    post_regSetGameLimitaion    {"cmd":1,"game_id": "1", "limitation": 3000,"balance": 20}    "cmd类型不正确"    －1004
+
+test_cmd_no_send
+    [Documentation]    cmd 字段不传递
+    post_regSetGameLimitaion    {"game_id": "1", "limitation": 3000,"balance": 20}    "没有设置cmd参数"    -1003
+
+test_cmd_null
+    [Documentation]    cmd 传递空
+    post_regSetGameLimitaion    {"cmd":"","game_id": "1", "limitation": 3000,"balance": 20}    "没有设置cmd参数"    -1003
+
+test_gameid_null
+    [Documentation]    gameid 传递空值
+    post_regSetGameLimitaion    {"cmd": "RegSetGameLimitation","game_id": "", "limitation": 3000,"balance": 20}    "gameid不存在"    -10
+
+test_gameid_int
+    [Documentation]    gameid类型不正确 int
+    post_regSetGameLimitaion    {"cmd": "RegSetGameLimitation","game_id": 1, "limitation": 3000,"balance": 20}    "gameid类型不正确"    -1003
+
+test_gameid_not_send
+    [Documentation]    gameid 字段不传递
+    post_regSetGameLimitaion    {"cmd": "RegSetGameLimitation","limitation": 3000,"balance": 20}    "缺少gameid字段"    -1003
+
+test_limitation_type_float
+    [Documentation]    limitaion字段类型为float
+    post_regSetGameLimitaion    {"cmd": "RegSetGameLimitation","game_id":1.00, "limitation": 3000,"balance": 20}    "limitation类型不正确"    0
+
+test_limitation_Negative
+    [Documentation]    limitaion 为负数
+    post_regSetGameLimitaion    {"cmd": "RegSetGameLimitation","game_id": "1", "limitation": -3000,"balance": 20}    "无效数据"    -10
+
+test_limitation_not_send
+    [Documentation]    limitaion 此字段不传递
+    post_regSetGameLimitaion    {"cmd": "RegSetGameLimitation","game_id": "1", "limitation": 3000,"balance": 20}    ""    0
+
+test_limitation_is_zero
+    [Documentation]    limitaion 设置为0
+    post_regSetGameLimitaion    {"cmd": "RegSetGameLimitation","game_id": "1", "limitation": 0,"balance": 0}    ""    0
+
+test_balance_float
+    [Documentation]    balance 字段类型为float
+    post_regSetGameLimitaion    {"cmd": "RegSetGameLimitation","game_id": "1", "limitation": 3000,"balance": 20.00}    "无效数据"    -13
+
+test_balance_Negative
+    [Documentation]    balance 为负数
+    post_regSetGameLimitaion    {"cmd": "RegSetGameLimitation","game_id": "1", "limitation": 3000,"balance": -100}    "无效数据"    -13
+
+test_balance_not_send
+    [Documentation]    balance 此字段不传递,默认等于limitation
+    post_regSetGameLimitaion    {"cmd": "RegSetGameLimitation","game_id": "1", "limitation":300}    ""    0
+    post_RegGetGameLimitationInfo    {"cmd": "RegGetGameLimitationInfo","game_id": "1"}    ""    0
+
+test_balance_is_zero
+    [Documentation]    balance 设置为0
+    post_regSetGameLimitaion    {"cmd": "RegSetGameLimitation","game_id": "1", "limitation": 3000,"balance": 0}    "balance应该>0"    0

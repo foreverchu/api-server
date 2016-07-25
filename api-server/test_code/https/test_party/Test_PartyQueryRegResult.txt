@@ -1,0 +1,47 @@
+*** Settings ***
+Library           Collections
+Library           String
+Library           HttpLibrary.HTTP
+Library           RequestsLibrary
+Library           string
+Resource          ../../业务关键字.txt
+
+*** Test Cases ***
+test_partyQueryRegResult
+    [Documentation]    正常查询
+    ${games}    post_PartyQueryRegResult    {"cmd": "PartyQueryRegResult", "party_id": "8"}    ""    0
+    log    game :${games}
+    ${item}    evaluate    ${games}
+    ${gameid}    get from dictionary    ${item[0]}    game_id
+    ${payed_player_count}    get from dictionary    ${item[0]}    payed_player_count
+    log    ${payed_player_count}
+    ${wait_pay_player_count}    get from dictionary    ${item[0]}    wait_pay_player_count
+    log    ${wait_pay_player_count}
+
+test_partyQuery_partyid_isnotexsit
+    [Documentation]    partyid不存在，查询失败
+    post_PartyQueryRegResult    {"cmd": "PartyQueryRegResult", "party_id": "10000"}    "无效partyid，赛事不存在\\n无效的party_id\\n10000 is not a valid party id"    -9
+
+test_partyQuery_partyid_closed
+    [Documentation]    partyid关闭，查询成功
+    post_PartyQueryRegResult    {"cmd": "PartyQueryRegResult", "party_id": "8"}    ""    0
+
+test_cmd_null
+    [Documentation]    cmd 为空值
+    post_PartyQueryRegResult    {"cmd": "", "party_id": "8"}    "没有设置cmd参数"    -1003
+
+test_cmd_type_int
+    [Documentation]    cmd 类型为 int
+    post_PartyQueryRegResult    {"cmd":1, "party_id": "8"}    "cmd类型不正确"    -1003
+
+test_cmd_is_notsend
+    [Documentation]    cmd 不传递
+    post_PartyQueryRegResult    {"party_id": "8"}    "没有设置cmd参数"    -1003
+
+test_partyQuery_partyid_notsend
+    [Documentation]    partyid不传递
+    post_PartyQueryRegResult    {"cmd": "PartyQueryRegResult"}    "无效数据\\n需要party_id参数"    -13
+
+test_partyQuery_partyid_int
+    [Documentation]    partyid 类型
+    post_PartyQueryRegResult    {"cmd": "PartyQueryRegResult", "party_id": 8}    "无效partyid，赛事不存在\\n不合法的party_id\\ntype assertion to string failed"    -9

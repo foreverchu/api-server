@@ -1,0 +1,11 @@
+*** Settings ***
+Library           Collections
+Library           String
+Library           HttpLibrary.HTTP
+Library           RequestsLibrary
+Library           string
+Resource          ../../业务关键字.txt
+
+*** Test Cases ***
+test_GameClose
+    post_game    {"cmd": "GameClose","game_id": "2","user_id": "100000"}    ""    0

@@ -1,0 +1,55 @@
+*** Settings ***
+Library           Collections
+Library           String
+Library           HttpLibrary.HTTP
+Library           RequestsLibrary
+Library           string
+Resource          ../../业务关键字.txt
+
+*** Test Cases ***
+test_getlimitation
+    [Documentation]    正常查询，gameid存在
+    post_regSetGameLimitaion    { "cmd": "RegSetGameLimitation","game_id":"1","limitation":"30", "balance":"10"}    ""    0
+    post_RegGetGameLimitationInfo    {"cmd": "RegGetGameLimitationInfo","game_id": "1"}    ""    0
+
+test_gameid_isnotexsit
+    [Documentation]    gameid不存在，无法获取
+    post_RegGetGameLimitationInfo    {"cmd": "RegGetGameLimitationInfo","game_id": "1000000000"}    "无效比赛id，比赛不存在"    -10
+
+test_gameid_endtime
+    [Documentation]    比赛时间已经结束,无法获取
+    post_regSetGameLimitaion    { "cmd": "RegSetGameLimitation","game_id":"4","limitation":30, "balance":10}    ""    0
+    ${limitation}    post_RegGetGameLimitationInfo    {"cmd": "RegGetGameLimitationInfo","game_id": "4"}    ""    0
+    log    ${limitation}
+    run keyword if    ${limitation}>0    should be equal    ${limitation} 名额可以设置    "当比赛报名时间截止，不可设置名额"
+
+test_gameid_closetime
+    [Documentation]    比赛已经关闭但报名时间并未结束,获取失败
+    post_regSetGameLimitaion    { "cmd": "RegSetGameLimitation","game_id":"20","limitation":30, "balance":10}    ""    0
+    ${limitation}    post_RegGetGameLimitationInfo    {"cmd": "RegGetGameLimitationInfo","game_id": "20"}    ""    0
+    log    ${limitation}
+    run keyword if    ${limitation}>0    should be equal    ${limitation} 名额可以设置    "比赛已经结束，不可设置名额"
+
+test_cmd_type_int
+    [Documentation]    cmd 类型为 int
+    post_RegGetGameLimitationInfo    {"cmd":1,"game_id": "1"}    "cmd类型不正确"    -1003
+
+test_cmd_type_null
+    [Documentation]    cmd 类型为 ""
+    post_RegGetGameLimitationInfo    {"cmd":"","game_id": "1"}    "没有设置cmd参数"    -1003
+
+test_cmd_type_nosend
+    [Documentation]    cmd 字段不传递
+    post_RegGetGameLimitationInfo    {"game_id": "1"}    "没有设置cmd参数"    -1003
+
+test_gameid_typeint
+    [Documentation]    gameid 类型为 int
+    post_RegGetGameLimitationInfo    {"cmd":"RegGetGameLimitationInfo","game_id":1}    "gameid数据类型不正确"    -1003
+
+test_gameid_nosend
+    [Documentation]    gameid 不传递
+    post_RegGetGameLimitationInfo    {"cmd":"RegGetGameLimitationInfo"}    "gameid缺少此字段"    -1003
+
+test_gameid_null
+    [Documentation]    gameid 值为""
+    post_RegGetGameLimitationInfo    {"cmd":"RegGetGameLimitationInfo","game_id":""}    "gameid缺少此字段"    -1003

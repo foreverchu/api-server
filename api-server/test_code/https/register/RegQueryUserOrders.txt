@@ -1,0 +1,20 @@
+*** Settings ***
+Library           Collections
+Library           String
+Library           HttpLibrary.HTTP
+Library           RequestsLibrary
+Library           string
+Resource          ../../业务关键字.txt
+
+*** Test Cases ***
+test_queryuser_orders
+    [Documentation]    查询用户报名订单
+    post_RegQueryUserOrders    {"cmd":"RegQueryUserOrders"}    ""    0
+
+test_queryuser_orders_cmd_isempty
+    [Documentation]    cmd 为空
+    post_RegQueryUserOrders    {"cmd":""}    "cmd不能为空"    -1003
+
+test_queryuser_orders_cmd_iserror
+    [Documentation]    cmd 值错误
+    post_RegQueryUserOrders    {"cmd":"RegqueryUserOrders"}    "cmd不存在"    -1003

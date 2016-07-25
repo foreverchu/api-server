@@ -1,0 +1,200 @@
+*** Settings ***
+Library           Collections
+Library           String
+Library           HttpLibrary.HTTP
+Library           RequestsLibrary
+Library           string
+Resource          ../../业务关键字.txt
+
+*** Variables ***
+${phone}          13611873856
+${email}          471618565@qq.com
+
+*** Test Cases ***
+test_userRegister_byemail
+    [Documentation]    邮箱注册
+    post_user    {"cmd": "UserRegister","come_from":"email","email":"${email}","password":"zbzzbd","password_confirm": "zbzzbd"}    ""    0
+    ${user_id}    database    select id from user where email='${email}'
+    ${token}    database    select token from email_confirm where user_id=${user_id[0][0]}
+    should not be equal    ${token[0][0]}    ""
+
+test_userRegister_byphone
+    [Documentation]    手机注册，其中包含获取验证码接口调用
+    post_getSMScode    {"cmd":"UserRegisterSMSCode","phone":"${phone}"}    ""    0
+    ${sms_code}    database    select code from smscode where phone=${phone} order by id desc limit 1
+    post_user    { "cmd":"UserRegister","come_from":"phone","phone":"${phone}","password":"zbzzbd","password_confirm":"zbzzbd","sms_code":"${sms_code[0][0]}"}    ""    0
+    ${name}    database    select name from user where phone=${phone}
+    should be equal    ${name[0][0]}    ${phone}
+
+test_thesame_name_01
+    [Documentation]    邮箱重复注册，用户名已经存在且已经激活
+    ${email}    set variable    471618565@qq.com
+    post_user    {"cmd": "UserRegister","come_from":"email","email":"${email}","password":"zbzzbd","password_confirm": "zbzzbd"}    ""    0
+
+test_thesame_name_02
+    [Documentation]    手机注册已存在
+    post_user    { "cmd":"UserRegister","come_from":"phone","phone":"${phone}","password":"zbzzbd","password_confirm":"zbzzbd","sms_code":"123456"}    "无效数据\\n手机号码已经被注册"    -13
+
+test_password_guize_by_email_01
+    [Documentation]    密码不符合规则，小于6位数，为5位数
+    post_user    {"cmd": "UserRegister","come_from":"email","email":"471618565@qq.com","password":"12345","password_confirm": "12345"}    "无效数据\\n密码不能小于6位"    -13
+
+test_password_guize_by_phone_01
+    [Documentation]    手机注册，密码不符合规则,小于6位，为5位
+    ${phone}    set variable    13918739640
+    post_getSMScode    {"cmd":"UserRegisterSMSCode","phone":"${phone}"}    ""    0
+    ${sms_code}    database    select code from smscode where phone=${phone} order by id desc limit 1
+    log    ${sms_code[0][0]}
+    post_user    {"cmd":"UserRegister","come_from":"phone","phone":"${phone}","password":"12345","password_confirm":"12345","sms_code":"${sms_code[0][0]}"}    "无效数据\\n密码不能小于6位"    -13
+
+test_thesame_guize_02
+    [Documentation]    密码不符合规则，大于位数12，为13位数
+    post_user    {"cmd": "UserRegister","come_from":"email","email":"471618565@qq.com","password":"zbzzbd1234567","password_confirm": "zbzzbd1234567"}    "无效数据\\n密码不能长于12位"    -13
+
+test_password_guize_by_phone_02
+    [Documentation]    手机注册，密码不符合规则,大于12位，为13位
+    post_user    { "cmd":"UserRegister","come_from":"phone","phone":"13918739640","password":"zbzzbd1234567","password_confirm":"zbzzbd1234567","sms_code":"123456"}    "注册失败，密码位数不正确"    0
+
+test_thesame_guize_03
+    [Documentation]    密码符合规则，为12位数
+    post_user    {"cmd": "UserRegister","come_from":"email","email":"471618565@qq.com","password":"zbzzbd123456","password_confirm": "zbzzbd123456"}    "祝成功注册"    0
+
+test_password_guize_by_phone_03
+    [Documentation]    手机注册，密码符合规则，为12位数
+    post_user    { "cmd":"UserRegister","come_from":"phone","phone":"13918739640","password":"zbzzbd123456","password_confirm":"zbzzbd123456","sms_code":"123456"}    ""    0
+
+test_register_code_error_01
+    [Documentation]    验证码错误
+
+test_register_code_error_01
+    [Documentation]    验证码错误
+
+test_register_code_error_02
+    [Documentation]    验证码过了有效期
+
+test_register_code_error_03
+    [Documentation]    验证码失效
+
+test_cmd_null
+    [Documentation]    cmd空
+    post_user    {"cmd":"","come_from":"email","email":"471618565@qq.com","password":"zbzzbd123456","password_confirm": "zbzzbd123456","captcha_token": "122","challenge": "1234"}    "没有设置cmd参数"    -1003
+
+test_cmd_null_by_phone
+    [Documentation]    手机注册， cmd空
+    post_user    { "cmd":"","come_from":"phone","phone":"13918739640","password":"zbzzbd123456","password_confirm":"zbzzbd123456","sms_code":"123456"}    "没有设置cmd参数"    -1003
+
+test_cmd_type_int
+    [Documentation]    cmd 字段类型不正确，为int
+    post_user    {"cmd":1,"come_from":"email","email":"471618565@qq.com","password":"zbzzbd123456","password_confirm": "zbzzbd123456"}    "没有设置cmd参数"    -1003
+
+test_cmd_typeint_by_phone
+    [Documentation]    手机注册， cmd类型为int
+    post_user    { "cmd":1,"come_from":"phone","phone":"13918739640","password":"zbzzbd123456","password_confirm":"zbzzbd123456","sms_code":"123456"}    "没有设置cmd参数"    -1003
+
+test_cmd_isnotsend
+    [Documentation]    cmd 不传递，查询失败
+    post_user    {"come_from":"email","email":"471618565@qq.com","password":"zbzzbd123456","password_confirm": "zbzzbd123456","captcha_token": "122","challenge": "1234"}    "没有设置cmd参数"    -1003
+
+test_cmd_isnotsend_by_phone
+    [Documentation]    手机注册， cmd字段不传递
+    post_user    {"come_from":"phone","phone":"13918739640","password":"zbzzbd123456","password_confirm":"zbzzbd123456","sms_code":"123456"}    "没有设置cmd参数"    -1003
+
+test_email_null
+    [Documentation]    email空
+    post_user    {"cmd": "UserRegister","come_from":"email","":"471618565@qq.com","password":"zbzzbd123456","password_confirm": "zbzzbd123456"}    "无效数据\\n邮箱格式不正确"    -13
+
+test_phone_null
+    [Documentation]    手机注册， phone 字段为空
+    post_user    { "cmd":"UserRegister","come_from":"phone","phone":"","password":"zbzzbd123456","password_confirm":"zbzzbd123456","sms_code":"123456"}    "无效数据\\n手机号码格式不正确"    -13
+
+test_email_type_int
+    [Documentation]    email 字段类型不正确为int
+    post_user    {"cmd":"UserRegister","come_from":"email","email":471618565,"password":"zbzzbd123456","password_confirm": "zbzzbd123456"}    "无效数据\\n邮箱格式不正确"    -13
+
+test_phone_type_int
+    [Documentation]    手机注册， type字段类型为int
+    post_user    { "cmd":"UserRegister","come_from":"phone","phone":13611873856,"password":"zbzzbd123456","password_confirm":"zbzzbd123456","sms_code":"123456"}    "无效数据\\n手机号码格式不正确"    -13
+
+test_email_isnotsend
+    [Documentation]    email 字段不传递
+    post_user    {"cmd": "UserRegister","come_from":"email","password":"zbzzbd123456","password_confirm": "zbzzbd123456","captcha_token": "122","challenge": "1234"}    "无效数据\\n邮箱格式不正确"    -13
+
+test_phone_isnotsend
+    [Documentation]    手机注册， phone不传递
+    post_user    { "cmd":"UserRegister","come_from":"phone","password":"zbzzbd123456","password_confirm":"zbzzbd123456","sms_code":"123456"}    "无效数据\\n手机号码格式不正确"    -13
+
+test_email_geshi_iserror
+    [Documentation]    email 字段内容非邮箱格式
+    post_user    {"cmd": "UserRegister","come_from":"email","email":"471618565","password":"zbzzbd123456","password_confirm": "zbzzbd123456"}    "无效数据\\n邮箱格式不正确"    -13
+
+test_phone_geshi_iserror
+    [Documentation]    手机注册，字段内容非法手机号码,10位数
+    post_user    {"cmd":"UserRegister","come_from":"phone","phone":"1361187385","password":"zbzzbd123456","password_confirm":"zbzzbd123456","sms_code":"123456"}    "无效数据\\n手机号码格式不正确"    -13
+
+test_password_null
+    [Documentation]    密码为空
+    post_user    {"cmd": "UserRegister","come_from":"email","email":"471618565@qq.com","password":"","password_confirm": "","captcha_token": "122","challenge": "1234"}    "无效数据\\n密码不能小于6位"    -13
+
+test_password_null_by_phone
+    [Documentation]    手机注册，password 为空
+    post_user    { "cmd":"UserRegister","come_from":"phone","phone":"13611873856","password":"","password_confirm":"zbzzbd123456","sms_code":"123456"}    "密码不能为空"    -13
+
+test_password_and_confirm_error
+    [Documentation]    密码与确认密码不相同
+    post_user    {"cmd": "UserRegister","come_from":"email","email":"471618565@qq.com","password":"zbzzbd123456","password_confirm": "zbzzbd","captcha_token": "122","challenge": "1234"}    "无效数据\\n密码不一致"    -13
+
+test_password_and_confirm_error_byphone
+    [Documentation]    手机注册，密码与确认密码不相同
+    post_user    { "cmd":"UserRegister","come_from":"phone","phone":"13611873856","password":"123456","password_confirm":"zbzzbd123456","sms_code":"123456"}    "密码填写错误"    -1003
+
+test_password_type_int
+    [Documentation]    密码类型为int 类型
+    post_user    {"cmd": "UserRegister","come_from":"email","email":"471618565@qq.com","password":123456,"password_confirm":123456,"captcha_token": "122","challenge": "1234"}    " 密码类型为int 类型"    0
+
+test_password_type_int_byphone
+    [Documentation]    手机注册，密码与确认密码不相同
+    post_user    { "cmd":"UserRegister","come_from":"phone","phone":"13611873856","password":123456,"password_confirm":"zbzzbd123456","sms_code":"123456"}    "密码类型不正确"    -1003
+
+test_password_isnot_send
+    [Documentation]    密码字段不传递
+    post_user    {"cmd": "UserRegister","come_from":"email","email":"471618565@qq.com","password_confirm":"1234456","captcha_token": "122","challenge": "1234"}    "缺少字段password"    0
+
+test_password_isnot_send_byphone
+    [Documentation]    手机注册，密码字段不传递
+    post_user    { "cmd":"UserRegister","come_from":"phone","phone":"13611873856","password_confirm":"zbzzbd123456","123456"}    "password字段缺少"    -1003
+
+test_password_confirm_null
+    [Documentation]    确认密码为空
+    post_user    {"cmd": "UserRegister","come_from":"email","email":"471618565@qq.com","password":"zbzzbd123456","password_confirm": "","captcha_token": "122","challenge": "1234"}    "祝成功注册"    0
+
+test_password_confirm_null_byphone
+    [Documentation]    手机注册，确认密码为空
+    post_user    { "cmd":"UserRegister","come_from":"phone","phone":"13611873856","password":"123456","password_confirm":"","sms_code":"123456"}    "密码类型不正确"    -1003
+
+test_password_confirm_type_iserror
+    [Documentation]    确认密码字段类型不正确
+    post_user    {"cmd": "UserRegister","come_from":"email","email":"471618565@qq.com","password":"123456","password_confirm":123456,"captcha_token": "122","challenge": "1234"}    "祝成功注册"    0
+
+test_password_confirm_type_iserror_byphone
+    [Documentation]    手机注册，确认密码字段类型不正确
+    post_user    { "cmd":"UserRegister","come_from":"phone","phone":"13611873856","password":"123456","password_confirm":123456,"sms_code":"123456"}    "确认密码类型不正确"    -1003
+
+test_password_confirm_isnotsend
+    [Documentation]    确认密码字段不传递
+    post_user    {"cmd": "UserRegister","come_from":"email","email":"471618565@qq.com","password":"123456","captcha_token": "122","challenge": "1234"}    "确认密码字段缺少"    0
+
+test_password_confirm_isnotsend_byphone
+    [Documentation]    手机注册， 确认密码字段不传递
+    post_user    { "cmd":"UserRegister","come_from":"phone","phone":"13611873856","password":"123456","sms_code":"123456"}    "缺少确认密码字段"    -1003
+
+test_smscode_isnotsend
+    [Documentation]    手机注册， 验证码不发送
+    post_user    { "cmd":"UserRegister","come_from":"phone","phone":"13611873856","password":"123456","password_confirm":123456}    "无效数据\\n无效的短信验证码"    -13
+
+test_smscode_isnoterror
+    [Documentation]    手机注册， 短信验证码错误
+    post_user    { "cmd":"UserRegister","come_from":"phone","phone":"13611873856","password":"123456","password_confirm":123456,"sms_code":"123456"}    "无效数据\\n无效的短信验证码"    -13
+
+test_smscode_type_int
+    [Documentation]    手机注册， 短信验证码字段类型为int
+    post_user    { "cmd":"UserRegister","come_from":"phone","phone":"13611873856","password":"123456","password_confirm":123456,"sms_code":123456}    "无效数据\\n无效的短信验证码"    -13

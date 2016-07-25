@@ -1,0 +1,109 @@
+*** Settings ***
+Library           Collections
+Library           String
+Library           HttpLibrary.HTTP
+Library           RequestsLibrary
+Library           string
+Resource          ../../业务关键字.txt
+
+*** Test Cases ***
+test_queryRegStateBy_idCard
+    [Documentation]    根据证件身份证
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 0, "certificate_no": "320322199007183891", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+    post_QueryRegstateByCert    {"cmd": "QueryRegStateByCert", "party_id": "1","certificate_type": 0, "certificate_no": "320322199007183891"}    ""    0
+
+test_queryRegStateBy_Passport
+    [Documentation]    根据护照证查询
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 1, "certificate_no": "北字第530341", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+    post_QueryRegstateByCert    {"cmd": "QueryRegStateByCert", "party_id": "1","certificate_type": 0, "certificate_no": "320322199007183891"}    ""    0
+
+test_queryRegStateBy_Military officer
+    [Documentation]    根据军官证查询
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 2, "certificate_no": "北字第530341", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+    post_QueryRegstateByCert    {"cmd": "QueryRegStateByCert", "party_id": "1","certificate_type": 0, "certificate_no": "320322199007183891"}    ""    0
+
+test_queryRegStateBy_MTPs
+    [Documentation]    根据台胞证查询
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 3, "certificate_no": "0099730503(B)", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+    post_QueryRegstateByCert    {"cmd": "QueryRegStateByCert", "party_id": "1","certificate_type": 0, "certificate_no": "320322199007183891"}    ""    0
+
+test_queryRegStateBy_Permit
+    [Documentation]    根据港澳通行证查询
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 4, "certificate_no": "W30364939", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+    post_QueryRegstateByCert    {"cmd": "QueryRegStateByCert", "party_id": "1","certificate_type": 0, "certificate_no": "320322199007183891"}    ""    0
+
+test_queryRegStateBy_Permit
+    [Documentation]    根据回乡证通行证查询
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 5, "certificate_no": "H0946839900", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+    post_QueryRegstateByCert    {"cmd": "QueryRegStateByCert", "party_id": "1","certificate_type": 0, "certificate_no": "320322199007183891"}    ""    0
+
+test_queryRegState_gameid_notexsit
+    [Documentation]    gameid不存在（已经删除的比赛）
+    post_QueryRegstateByCert    {"cmd": "QueryRegStateByCert", "party_id": "10000000","certificate_type": 0, "certificate_no": "320322199007183891"}    "对应的比赛不存在"    0
+
+test_queryRegState_certificate_notexsit
+    [Documentation]    证件号不存在
+    post_QueryRegstateByCert    {"cmd": "QueryRegStateByCert", "party_id": "1","certificate_type": 0, "certificate_no": "320322199007183890"}    "证件号不存在"    －1003
+
+test_queryRegState_certificate_notmatch
+    [Documentation]    证件号与证件类型不匹配
+    post_QueryRegstateByCert    {"cmd": "QueryRegStateByCert", "party_id": "1","certificate_type": 0, "certificate_no": "320322199007183890"}    "证件号不存在"    －1003
+
+test_queryRegState_orderstate_noreg
+    [Documentation]    报名处于等待的用户
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 1, "certificate_no": "北字第530341", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+    post_QueryRegstateByCert    {"cmd": "QueryRegStateByCert", "party_id": "1","certificate_type": 0, "certificate_no": "320322199007183891"}    ""    0
+
+test_queryRegState_waitorder
+    [Documentation]    已经生成订单，等待支付的用户
+    post_test_regetqueuetoken    { "cmd": "RegGetQueueToken","game_id": "1","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 1, "certificate_no": "北字第530341", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+    post_QueryRegstateByCert    {"cmd": "QueryRegStateByCert", "party_id": "1","certificate_type": 0, "certificate_no": "320322199007183891"}    ""    0
+
+test_queryRegState_ordered
+    [Documentation]    已经成功支付用户
+    post_QueryRegstateByCert    {"cmd": "QueryRegStateByCert", "party_id": "1","certificate_type": 0, "certificate_no": "320322199007183891"}    ""    0
+
+test_partyid_notmatch_certi
+    [Documentation]    报名比赛的id与证件号不匹配（即：用户没有在该比赛下报名）
+    post_test_regetqueuetoken    {"cmd": "RegGetQueueToken","game_id": "10","user_id": "100002", "players": [ { "name": "zhangbz","certificate_type": 1, "certificate_no": "北字第530341", "mobile": "13611873856", "email": "471618565@qq.com", "country": "中国", "province": "江苏","city": "沛县", "address1": "江苏沛县", "address2": "上海松江区文翔路58号电商家园","zip": "200000","gender": "男","birth_date": "19990.07.18","emergency_contact_name": "张荣","emergency_contact_mobile": "13611873856", "t_shirt_size": "XL", "extra_info_json": "本人自愿加入马拉松赛事，知晓其风险" }]}    ""    0
+    post_QueryRegstateByCert    {"cmd": "QueryRegStateByCert", "party_id": "1","certificate_type": 0, "certificate_no": "320322199007183891"}    ""    0
+
+test_cmd_type_int
+    [Documentation]    cmd 类型不正确，为int
+    post_QueryRegstateByCert    {"cmd": 1, "party_id": "1","certificate_type": 0, "certificate_no": "320322199007183891"}    "cmd 类型不正确"    -1003
+
+test_cmd_null
+    [Documentation]    cmd 为空
+    post_QueryRegstateByCert    {"cmd":"", "party_id": "1","certificate_type": 0, "certificate_no": "320322199007183891"}    "cmd 类型不正确"    -1003
+
+test_cmd_not_send
+    [Documentation]    cmd 不传递
+    post_QueryRegstateByCert    {"party_id": "1","certificate_type": 0, "certificate_no": "320322199007183891"}    "cmd不传递"    -1003
+
+test_partyid_type_int
+    [Documentation]    partyid类型为int
+    post_QueryRegstateByCert    {"cmd": "QueryRegStateByCert", "party_id":1,"certificate_type": 0, "certificate_no": "320322199007183891"}    "partyid类型不正确"    －1003
+
+test_partyid_not_send
+    [Documentation]    partyid 不传递
+    post_QueryRegstateByCert    {"cmd": "QueryRegStateByCert","certificate_type": 0, "certificate_no": "320322199007183891"}    "缺少partyid"    －1003
+
+test_certicate_type_string
+    [Documentation]    certicate_type 类型不正确为string 类型
+    post_QueryRegstateByCert    {"cmd": "QueryRegStateByCert", "party_id": "1","certificate_type": "0", "certificate_no": "320322199007183891"}    "certicate_type 类型不正确为string 类型"    －1003
+
+test_certicate_type_notsend
+    [Documentation]    certicate_type 字段不传递
+    post_QueryRegstateByCert    {"cmd": "QueryRegStateByCert", "party_id": "1", "certificate_no": "320322199007183891"}    "certicate_type值缺少"    －1003
+
+test_certicate_type_Negativenumber
+    [Documentation]    certicate_type 为负数
+    post_QueryRegstateByCert    {"cmd": "QueryRegStateByCert", "party_id": "1", "certificate_type":-1,"certificate_no": "320322199007183891"}    "certicate_type数值不能为负数"    －1003
+
+test_certicate_no_type_int
+    [Documentation]    certicate_no 为int
+    post_QueryRegstateByCert    {"cmd": "QueryRegStateByCert", "party_id": "1", "certificate_type":1,"certificate_no": 320322199007183891}    "certicate_no类型不正确"    －1003
+
+test_certicate_no_null
+    [Documentation]    certicate_no 为空
+    post_QueryRegstateByCert    {"cmd": "QueryRegStateByCert", "party_id": "1", "certificate_type":1,"certificate_no":""}    "certicate_no没有设置值"    －1003
